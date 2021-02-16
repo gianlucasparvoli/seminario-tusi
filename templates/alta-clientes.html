@@ -1,0 +1,44 @@
+{% extends "navbar-logueado.html" %}
+
+{% block content %}
+
+<script>
+
+</script>
+
+
+<form style="margin-top:80px;" action="/client/add" method="POST">
+  <!-- Para alerta de Flash /viene desde python) -->
+  <div class="form-group">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for m in messages %}
+        <div  class="alert alert-success text-center">{{ m }}</div >
+        {% endfor %}
+        {% endif %}
+    {% endwith %}
+    </div>
+    <!-- Arranca el Formulario -->
+    <h1 class="text-center">Registrar Cliente</h1>
+    <br></br>
+    <div class="form-row">
+      <div class="form-group col-md-12">
+        <label for="inputUsuario">Nombre</label>
+        <input type="text" class="form-control" id="Nombre" name="Nombre" placeholder="Nombre" required="required">
+      </div>
+      <div class="form-group col-md-12">
+        <label for="inputApellido">Direccion</label>
+        <input type="text" class="form-control" id="Direccion" name="Direccion" placeholder="Direccion" required="required">
+      </div>
+      <div class="form-group col-md-12">
+        <label for="inputApellido">Telefono</label>
+        <input type="text" class="form-control" id="Telefono" name="Telefono" placeholder="Telefono" required="required">
+      </div>
+    </div>
+    <br></br>
+    <div class="form-group col-md-4 m-auto">
+    <button type="submit" class="btn btn-primary form-control">Guardar</button>
+    </div>
+    
+  </form>
+{% endblock %}

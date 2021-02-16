@@ -1,0 +1,64 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<link href="{{ url_for('static',filename='css/estilo.css') }}"  rel="stylesheet" type="text/css">
+<link href="{{ url_for('static',filename='css/fuente.css') }}" rel="stylesheet" type="text/css">
+
+<script>
+
+    function sendToLogueadoMenu(){
+        if(document.getElementById("idUserLogueado")){
+            idusuarioLogueado = document.getElementById("idUserLogueado").innerHTML;
+            window.location.href = '/menu/' + idusuarioLogueado;
+        }
+        
+    }
+
+    
+</script>
+    
+<form action="/login" method="POST">
+    <div class="row" style="margin-top:100px;">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+        <div class="card card-signin my-5">
+            <div class="card-body">
+                <hr class="my-4">
+            <h5 class="card-title text-center">Iniciar Sesion</h5>
+            <div class="form-signin" >
+                <div class="form-label-group">
+                <input type="text" id="usuario" name="usuario" class="form-control" placeholder="Usuario" required autofocus>
+                <label for="usuario">Usuario</label>
+                </div>
+
+                <div class="form-label-group">
+                <input type="password" id="contrasena" name="contrasena" class="form-control" placeholder="Contraseña" required>
+                <label for="contrasena">Contraseña</label>
+                </div>
+
+                <div class="custom-control custom-checkbox mb-3">
+                <input type="checkbox" class="custom-control-input" id="chkrecordar">
+                </div>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                    {% for m in messages %}
+                    <div  class="alert alert-danger text-center">{{ m }}</div >
+                    <br>
+                    {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            
+                <button class="btn btn-lg btn-primary btn-block" name="btn_iniciarsesion" id="btn_iniciarsesion" type="submit">Iniciar Sesion</button>
+
+                {% if value %}
+                <p id="idUserLogueado" style="visibility: hidden;">{{ value }}</p>
+                {% endif %}
+
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</form>
+<script>sendToLogueadoMenu();</script>
+{% endblock %}

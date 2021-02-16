@@ -1,0 +1,40 @@
+{% extends "navbar-logueado.html" %}
+
+{% block content %}
+
+<script>
+
+</script>
+
+
+<form style="margin-top:80px;" action="/productos/add" method="POST">
+  <!-- Para alerta de Flash /viene desde python) -->
+  <div class="form-group">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for m in messages %}
+        <div  class="alert alert-success text-center">{{ m }}</div >
+        {% endfor %}
+        {% endif %}
+    {% endwith %}
+    </div>
+    <!-- Arranca el Formulario -->
+    <h1 class="text-center">Registrar Producto</h1>
+    <br></br>
+    <div class="form-row">
+      <div class="form-group col-md-12">
+        <label for="inputUsuario">Nombre</label>
+        <input type="text" class="form-control" id="Nombre" name="Nombre" placeholder="Nombre" required="required">
+      </div>
+      <div class="form-group col-md-12">
+        <label for="inputApellido">Precio ($)</label>
+        <input type="text" class="form-control" id="Precio" name="Precio" placeholder="Precio" required="required">
+      </div>
+    </div>
+    <br></br>
+    <div class="form-group col-md-4 m-auto">
+    <button type="submit" class="btn btn-primary form-control">Guardar</button>
+    </div>
+    
+  </form>
+{% endblock %}

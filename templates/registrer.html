@@ -1,0 +1,84 @@
+{% extends "navbar-logueado.html" %}
+
+{% block content %}
+
+<script>
+  function getdatanow() {
+      url = "/grupos";
+
+      $.getJSON(url).done(function(data){
+        console.log(data)
+          dl = data.length;
+          $("#chk_grupos").empty();
+          data.forEach( function (obj){
+            if(obj.estado_grupo == 1){  
+              $('#chk_grupos').append('<li class="list-group-item"><input class="mr-2" type="checkbox" value="'+obj.id+'" id="grupo'+obj.id+'" name="grupo'+obj.id+'"><label class="form-check-label" for="grup'+obj.id+'">'+obj.nombre+'</label></li>');
+            }
+          });
+      });
+  }
+
+  function toggle_check(check) {
+      if (check.value=="on") {
+        check.value="off";
+      }
+      else {
+        check.value="on";
+      }
+      console.log(check.value)
+    }
+</script>
+
+
+<form style="margin-top:80px;" action="/usuarios" method="POST">
+  <!-- Para alerta de Flash /viene desde python) -->
+  <div class="form-group">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for m in messages %}
+        <div  class="alert alert-success text-center">{{ m }}</div >
+        {% endfor %}
+        {% endif %}
+    {% endwith %}
+    </div>
+    <!-- Arranca el Formulario -->
+    <h1 class="text-center">Registrar Usuario</h1>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="inputUsuario">Usuario</label>
+        <input type="text" class="form-control" id="Usuario" name="Usuario" placeholder="Usuario" required="required">
+      </div>
+      <div class="form-group col-md-6">
+        <label for="inputApellido">Apellido</label>
+        <input type="text" class="form-control" id="Apellido" name="Apellido" placeholder="Apellido" required="required">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="inputNombre">Nombre</label>
+        <input type="text" class="form-control" id="Nombre" name="Nombre" placeholder="Nombre" required="required">
+      </div>
+      <div class="form-group col-md-6">
+        <label for="inputEmail">Email</label>
+        <input type="email" class="form-control" id="Email" name="Email" placeholder="email@example.com" required="required">
+      </div>
+    </div>
+    <div class="form-group">
+      <ul class="list-group col-md-6 m-auto" id="">
+        <label for="inputEmail">Estado</label>
+        <li class="list-group-item"><input class="mr-2" type="checkbox" name="Estado" id="Estado" onclick="toggle_check(this);" checked><label class="form-check-label" for="Estado">Activado</label></li>
+      </ul>
+    </div>
+    <h5>Seleccione Grupos</h5>
+    <div class="form-group">
+      <ul class="list-group col-md-6 m-auto" id="chk_grupos">
+        <!-- <li class="list-group-item"><input class="mr-2" type="checkbox" name="grup" id="grup"><label class="form-check-label" for="grup"></label></li> -->
+      </ul>
+    </div>
+    <div class="form-group col-md-4 m-auto">
+    <button type="submit" class="btn btn-primary form-control">Registrarse</button>
+    </div>
+    
+  </form>
+  <script>getdatanow();</script>
+{% endblock %}

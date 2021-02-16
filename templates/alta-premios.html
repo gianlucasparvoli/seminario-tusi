@@ -1,0 +1,98 @@
+{% extends "navbar-logueado.html" %}
+
+{% block content %}
+<script>
+
+    function getClientes() {
+        url = "/usuarios";
+        $.getJSON(url).done(function (prod) {
+            dl = prod.length;
+            $("#Usuario").empty();
+            $('#Usuario').append(
+                '<option value="nothing" disabled selected>Seleccione...</option>'
+            );
+            prod.forEach(function (obj) {
+                $('#Usuario').append(
+                    '<option value="' + obj.id + '">' + obj.nombre + " "+ obj.apellido +'</option>'
+                );
+            });
+        });
+    }
+
+    function getProductos() {
+        url = "/product/all";
+        $.getJSON(url).done(function (prod) {
+            dl = prod.length;
+            $("#Producto").empty();
+            $('#Producto').append(
+                '<option value="nothing" disabled selected>Seleccione...</option>'
+            );
+            prod.forEach(function (obj) {
+                $('#Producto').append(
+                    '<option value="' + obj.id + '">' + obj.nombre + '</option>'
+                );
+            });
+        });
+    }
+
+    function btn_guardar() {
+        cli = document.getElementById("Usuario").value;
+        prod = document.getElementById("Producto").value;
+        if (cli == "nothing") {
+            alert("Debe seleccionar algun Cliente")
+        }
+        if (prod == "nothing") {
+            alert("Debe seleccionar algun Producto")
+        }
+    }
+
+    getClientes();
+    getProductos();
+</script>
+
+
+<form style="margin-top:80px;" action="/prize/add" method="POST">
+    <!-- Para alerta de Flash /viene desde python) -->
+    <div class="form-group">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for m in messages %}
+        <div class="alert alert-success text-center">{{ m }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+    <!-- Arranca el Formulario -->
+    <h1 class="text-center">Registrar Premio</h1>
+    <br></br>
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label for="inputApellido">Usuario</label>
+            <select class="form-control " id="Usuario" name="Usuario">
+            </select>
+        </div>
+        <div class="form-group col-md-12">
+            <label for="inputApellido">Producto</label>
+            <select class="form-control " id="Producto" name="Producto">
+            </select>
+        </div>
+        <div class="form-group col-md-12">
+            <label for="inputApellido">Cantidad</label>
+            <input type="number" class="form-control" id="Cantidad" name="Cantidad" placeholder="Cantidad"
+                required="required" min=0>
+        </div>
+        <div class="form-group col-md-12">
+            <label for="inputApellido">Premio: $</label>
+            <input type="number" class="form-control" id="Premio" name="Premio" placeholder="Premio"
+                required="required" min=0>
+        </div>
+    </div>
+    <br></br>
+    <div class="form-group col-md-4 m-auto">
+        <button type="submit" class="btn btn-primary form-control" onclick="btn_guardar();">Guardar</button>
+    </div>
+
+</form>
+
+
+{% endblock %}

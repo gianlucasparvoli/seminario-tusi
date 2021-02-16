@@ -1,0 +1,77 @@
+{% extends "navbar-logueado.html" %}
+
+{% block content %}
+
+
+<script>
+
+    var cantProd;
+    var prods = [];
+    var dataDonut = [];
+    var dataBar = [];
+    function getProductos() {
+        url = "/product/all";
+        $.getJSON(url).done(function (prod) {
+            cantProd = prod.length;
+            prod.map(async e => {
+                await prods.push(e);
+            })
+            
+            url1 = "/sell/all";
+            let data;
+            $.getJSON(url1).done(async function (vent) {
+                let arr = [];
+                let total = vent.length;
+                
+                for (var i = 1; i <= cantProd; i++) {
+                    const tot = await vent.filter(vent => vent.productoid === i);
+                    const name = await prods.filter(p => p.id === i);
+
+                    await dataDonut.push({ "label": name[0].nombre, "value": tot.length });
+                    await dataBar.push({ "y": name[0].nombre, "a": tot.length });
+                }
+
+                await Morris.Donut({
+                    element: 'graficoTipoLente1',
+                    data: dataDonut,
+                    colors: ['#FF7400', '#00117A', '#BE0065'],
+                    resize: true,
+                    formatter: function (value, data) { return (value / total * 100).toFixed(1) + '%'; }
+                });
+                await Morris.Bar({
+                    element: 'graficoTipoLente2',
+                    data: dataBar,
+                    xkey: 'y',
+                    ykeys: ['a'],
+                    labels: ['Total'],
+                    barColors: ['#EA2A2A'],
+                    resize: true
+                });
+            });
+        });
+    }
+
+    getProductos();
+</script>
+
+
+<div class="container" style="margin-top:80px;">
+    <h3 style="text-align: center;">ESTADISTICAS</h3>
+    <hr />
+    <h4 style="text-align: center;">Reporte por Ventas</h4>
+    <div class="row">
+        <div class="col-md-6">
+            <hr />
+            <div id="graficoTipoLente1">
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <hr />
+            <div id="graficoTipoLente2">
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

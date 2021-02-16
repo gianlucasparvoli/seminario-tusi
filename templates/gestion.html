@@ -1,0 +1,352 @@
+{% extends "navbar-logueado.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+<script>
+
+    function getGruposUsuarioXId(id) {
+        url = "/grupos-usuario/" + id;
+        let arrayGruposId = [];
+        $.getJSON(url).done(function (data) {
+            data.map(e => {
+                arrayGruposId.push(e.grupoid);
+            })
+
+        });
+        return arrayGruposId;
+    }
+
+    // function deleteUsuariosGruposUsuarios(id){
+    //     url = "/usuario/"+id;
+    //     $.getJSON(url).done(function(data){
+    //         $('#botoneseliminar').empty();
+    //         $('#botoneseliminar').append(
+    //             '<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancelar">'+
+    //             '<input type="submit" class="btn btn-danger" value="Borrar" onclick="deleteUsGrupUs(' + obj.id + ',' + idusuarioLogueado +');" >'
+    //         )
+    //     })
+    // }
+
+    function deleteUsGrupUs(id, idAdmin) {
+        url = "/usuario/" + id;
+        $.ajax({
+            url: url,
+            type: 'DELETE',
+            success: function (result) {
+                if (result == "OK") {
+                    window.location.href = "/gestion-usuarios/" + idAdmin;
+                }
+            }
+        });
+    }
+
+    function resetearClavePre(id, idAdmin) {
+        url = "/resetear-clave/" + id + "/" + idAdmin;
+        $.getJSON(url).done(function (data) {
+            $('#buttonResetPass').empty();
+            $('#buttonResetPass').append(
+                '<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancelar">' +
+                '<input type="button" class="btn btn-danger" onclick="resetearClave(' + obj.id + ',' + idusuarioLogueado + ');" value="Borrar">'
+            )
+        })
+    }
+
+    function resetearClave(id, idAdmin) {
+        url = "/resetear-clave/" + id + "/" + idAdmin;
+        $.getJSON(url).done(function (data) {
+            console.log(data)
+        })
+    }
+
+    function getGruposxIDUsu(id) {
+        url = "/usuario/" + id;
+        $.getJSON(url).done(function (data) {
+            $("#form-editar").empty();
+            let aux;
+            if (data.estado == 1) {
+                aux = '<select class="form-control" name="Estado" id="Estado">' +
+                    '<option class="form-control" value="1" selected>Activado</option>' +
+                    '<option class="form-control" value="2">Desactivado</option>' +
+                    '</select>'
+            } else {
+                aux = '<select class="form-control" name="select" name="Estado" id="Estado">' +
+                    '<option class="form-control" value="1">Activado</option>' +
+                    '<option class="form-control" value="2"selected>Desactivado</option>' +
+                    '</select>'
+            }
+
+            const auxiliar = getGruposUsuarioXId(id);
+            url1 = "/grupos";
+            $.getJSON(url1).done(function (data1) {
+                $("#chk_grupos").empty();
+                data1.forEach(function (obj) {
+                    if (obj.estado_grupo == 1) {
+                        $('#chk_grupos').append('<li class="list-group-item"><input class="mr-2" type="checkbox" value="' + obj.id + '" id="grup' + obj.id + '" name="grup' + obj.id + '"><label class="form-check-label" for="grup' + obj.id + '">' + obj.nombre + '</label></li>');
+                    }
+                    auxiliar.map(e => {
+                        if (obj.id == e) {
+                            document.getElementById("grup" + obj.id).checked = true;
+                        }
+                    })
+                });
+
+            });
+
+            $('#form-editar').append(
+                '<div class="form-group">' +
+                '<label>Usuario</label>' +
+                '<input type="text" class="form-control" value="' + data.usuario + '" name="Usuario" id="Usuario" readonly>' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label>Apellido</label>' +
+                '<input type="text" class="form-control" value="' + data.apellido + '" name="Apellido" id="Apellido" required>' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label>Nombre</label>' +
+                '<input type="text" class="form-control" value="' + data.nombre + '" name="Nombre" id="Nombre" required>' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label>Email</label>' +
+                '<input type="email" class="form-control" value="' + data.mail + '" id="Email" name="Email" required>' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label>Estado</label>' +
+                '<br>' +
+                aux +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label>Grupos</label>' +
+                '<div id="chk_grupos">' +
+                '</div>' +
+                '</div>'
+            );
+        });
+    }
+
+    function getUsuarios() {
+        idusuarioLogueado = document.getElementById("idUserLogueado").innerHTML;
+        url = "/usuarios";
+        $.getJSON(url).done(function (usuarios) {
+            dl = usuarios.length;
+            $("#tr_cargartabla").empty();
+            usuarios.forEach(function (obj) {
+                var estado;
+                if (obj.estado == 1) {
+                    estado = "Activado"
+                } else {
+                    estado = "Desactivado"
+                }
+                $('#tr_cargartabla').append(
+                    '<tr>' +
+                    '<td>' + obj.id + '</td>' +
+                    '<td>' + obj.nombre + ' ' + obj.apellido + '</td>' +
+                    '<td>' + obj.mail + '</td>' +
+                    '<td>' + obj.usuario + '</td>' +
+                    '<td>' + estado + '</td>' +
+                    '<td id="qwerty">' +
+                    '<a href="/sigin" class="add" id=grupoadd' + obj.id + ' ><i class="material-icons" data-toggle="tooltip" title="Agregar">add_box</i></a>' +
+                    '<a href="#editEmployeeModal" id=grupomodif' + obj.id + ' onclick="getGruposxIDUsu(' + obj.id + ');" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Editar">&#xE254;</i></a>' +
+                    '<a href="#deleteEmployeeModal" id=grupodel' + obj.id + ' onclick="deleteUsGrupUs(' + obj.id + ',' + idusuarioLogueado + ');" class="delete" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Borrar">&#xE872;</i></a>' +
+                    '<a href="#resetPasswordEmployeeModal" id=grupores' + obj.id + ' onclick="resetearClavePre(' + obj.id + ',' + idusuarioLogueado + ');" class="reset" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Resetear Clave">&#xe62a;</i></a>' +
+                    '</td>' +
+                    '</tr>'
+                );
+                document.getElementById("grupoadd" + obj.id).style.visibility = 'hidden';
+                document.getElementById("grupomodif" + obj.id).style.visibility = 'hidden';
+                document.getElementById("grupodel" + obj.id).style.visibility = 'hidden';
+                document.getElementById("grupores" + obj.id).style.visibility = 'hidden';
+
+
+                url2 = "/grupos-usuario/" + idusuarioLogueado;
+
+                $.getJSON(url2).done(function (data2) {
+                    data2.map(e => {
+                        url3 = "/acciones-grupo/" + e.grupoid;
+                        $.getJSON(url3).done(function (data3) {
+                            data3.map(e => {
+                                url4 = "/accion/" + e.id;
+                                $.getJSON(url4).done(function (data4) {
+                                    data4.map(e => {
+                                        let addUsuario;
+                                        console.log(e)
+                                        if (e.nombre == "Agregar Usuario") {
+                                            document.getElementById("grupoadd" + obj.id).style.visibility = 'visible';
+                                        } else if (e.nombre == "Modificar Usuario") {
+                                            document.getElementById("grupomodif" + obj.id).style.visibility = 'visible';
+                                        } else if (e.nombre == "Eliminar Usuario") {
+                                            document.getElementById("grupodel" + obj.id).style.visibility = 'visible';
+                                        } else if (e.nombre == "Resetear Clave") {
+                                            document.getElementById("grupores" + obj.id).style.visibility = 'visible';
+                                        }
+                                        // else{
+                                        //     document.getElementById("grupoadd"+obj.id).style.visibility = 'hidden';
+                                        //     document.getElementById("grupomodif"+obj.id).style.visibility = 'hidden';
+                                        //     document.getElementById("grupodel"+obj.id).style.visibility = 'hidden';
+                                        //     document.getElementById("grupores"+obj.id).style.visibility = 'hidden';
+                                        // }
+                                    })
+
+                                })
+                            })
+                        })
+                    })
+
+                });
+            });
+
+        });
+
+    }
+
+    window.onload = function () {
+        getUsuarios();
+    };
+
+</script>
+
+<form style="margin-top:100px;">
+    <div class="form-group">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for m in messages %}
+        <div class="alert alert-success text-center">{{ m }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+    <div class="table-responsive">
+        <div class="table-wrapper table">
+
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h2 style="text-align: center;">Gestionar Usuarios</h2>
+                    </div>
+                </div>
+            </div>
+            <!-- <form>
+                <div class="form-row p-2">
+                    <div class="form-group col-md-3 m-auto">
+                        <input class="form-control col-md-12" type="search" placeholder="Buscar por Nombre"
+                            aria-label="Search">
+                    </div>
+                    <div class="form-group col-md-3 m-auto dropdown">
+                        <button class="btn btn-secondary dropdown-toggle col-md-12" type="button"
+                            id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Grupos
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item">Todos</a>
+                            <a class="dropdown-item">Activado</a>
+                            <a class="dropdown-item">Desactivado</a>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-3 m-auto dropdown">
+                        <button class="btn btn-secondary dropdown-toggle col-md-12" type="button"
+                            id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Estados
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="#">Todos</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-3 m-auto">
+                        <button type="submit" class="btn btn-primary form-control">Filtrar</button>
+                    </div>
+                </div>
+            </form> -->
+            <table class="table table-striped table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th></th>
+                        <th>Nombre y apellido</th>
+                        <th>Email</th>
+                        <th>Usuario</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tr_cargartabla">
+                    <!-- <tr id="tr_cargartabla">
+                        
+                    </tr>  -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="editEmployeeModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="/modificar-usuario/{{ value }}" method="POST">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Editar usuario</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body" id="form-editar">
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancelar">
+                        <input type="submit" class="btn btn-info" value="Guardar">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Delete Modal HTML -->
+    <div id="deleteEmployeeModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form>
+                    <div class="modal-header">
+                        <h4 class="modal-title">Eliminar usuario</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Desea eliminar este registro?</p>
+                        <p class="text-warning"><small>Esta accion no puede ser cambiada</small></p>
+                    </div>
+                    <div class="modal-footer" id="botoneseliminar">
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Reset Password Modal HTML -->
+    <div id="resetPasswordEmployeeModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form>
+                    <div class="modal-header">
+                        <h4 class="modal-title">Resetear Clave</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Desea resetear la clave de este registro?</p>
+                        <p class="text-warning"><small>Esta accion no puede ser cambiada</small></p>
+                    </div>
+                    <div class="modal-footer" id="buttonResetPass">
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% if value %}
+<p id="idUserLogueado" style="visibility: hidden;">{{ value }}</p>
+{% endif %}
+
+<!-- <script>
+    getUsuarios();
+</script> -->
+
+{% endblock %}

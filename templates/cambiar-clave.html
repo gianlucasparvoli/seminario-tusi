@@ -1,0 +1,120 @@
+{% extends "navbar-logueado.html" %}
+
+{% block content %}
+
+<script>
+
+    function showpass() {
+        var x = document.getElementById("Clave");
+        if (x.type === "password") {
+            x.type = "text";
+        } else {
+            x.type = "password";
+        }
+    }
+
+    function showpassagain() {
+        var x = document.getElementById("ClaveRepetida");
+        if (x.type === "password") {
+            x.type = "text";
+        } else {
+            x.type = "password";
+        }
+    }
+
+    function showpassactual() {
+        var x = document.getElementById("ClaveActual");
+        if (x.type === "password") {
+            x.type = "text";
+        } else {
+            x.type = "password";
+        }
+    }
+
+    function getUsuXID(id){
+      url = "/usuario/"+id;
+        $.getJSON(url).done(function(data){
+          document.getElementById("Usuario").innerHTML = data.usuario;
+          document.getElementById("Apellido").innerHTML = data.apellido;
+          document.getElementById("Nombre").innerHTML = data.nombre;
+          document.getElementById("Email").innerHTML = data.mail.toString();
+        })
+    }
+
+
+</script>
+
+<form style="margin-top:80px;" method="POST" action="/cambiar-clave/{{ value }}">
+    <!-- Para alerta de Flash /viene desde python) -->
+      <div class="form-group">
+      {% with messages = get_flashed_messages() %}
+          {% if messages %}
+          {% for m in messages %}
+          <div  class="alert alert-success text-center">{{ m }}</div >
+          {% endfor %}
+          {% endif %}
+      {% endwith %}
+      </div>
+      <!-- Arranca el Formulario -->
+      <h1 class="text-center">Cambiar Clave</h1>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="inputUsuario">Usuario</label>
+          <label class="form-control" id="Usuario" name="Usuario" placeholder="Usuario" readonly>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="inputApellido">Apellido</label>
+          <label class="form-control" id="Apellido" name="Apellido" placeholder="Apellido" readonly>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="inputNombre">Nombre</label>
+          <label class="form-control" id="Nombre" name="Nombre" placeholder="Nombre" readonly>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="inputEmail">Email</label>
+          <label class="form-control" id="Email" name="Email" placeholder="email@example.com" readonly>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-12">
+          <label for="inputClave">Clave Actual</label>
+          <input type="password" class="form-control" id="ClaveActual" name="ClaveActual" placeholder="Clave Actual" required>
+          <label for="inputClave">Mostrar Clave</label>
+          <input type="checkbox" class="" onclick="showpassactual()">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-12">
+          <label for="inputClave">Nueva Clave</label>
+          <input type="password" class="form-control" id="Clave" name="Clave" placeholder="Clave" required>
+          <label for="inputClave">Mostrar Clave</label>
+          <input type="checkbox" class="" onclick="showpass()">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-12">
+          <label for="inputRepetirClave">Repita la Clave</label>
+          <input type="password" class="form-control" id="ClaveRepetida" name="ClaveRepetida" placeholder="Repita la Clave" required>
+          <label for="inputClave">Mostrar Clave</label>
+          <input type="checkbox" class="" onclick="showpassagain()">
+        </div>
+      </div>
+      <div class="form-group col-md-4 m-auto">
+      <button type="submit" class="btn btn-primary form-control">Cambiar Clave</button>
+      </div>
+      
+    </form>
+
+    {% if value %}
+        <p id="idUserLogueado" style="visibility: hidden;">{{ value }}</p>
+    {% endif %}
+
+    <script>
+      const idUsuAux = window.location.href.split("/");
+      const idUsu = idUsuAux[4].toString();
+      getUsuXID(idUsu);
+    </script>
+
+{% endblock %}

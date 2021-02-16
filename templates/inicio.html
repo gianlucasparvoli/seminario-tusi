@@ -1,0 +1,25 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<script>
+
+    function goToLogin(){
+        window.location.href = '/login';
+    }
+
+    function goToSigIn(){
+        window.location.href = '/sigin';
+    }
+
+</script>
+
+<div style="margin-top:150px;">
+    <img src="{{ url_for('static',filename='images/conferencia.svg') }}" class="rounded mx-auto d-block" width="200" height="200">
+    <h2 class="text-center">Bienvenido</h2>
+    <br>
+    <button type="button" class="btn btn-primary btn-lg btn-block col-md-6 mx-auto" onclick="goToLogin()">Ingresar</button>
+    <!-- <button type="button" class="btn btn-secondary btn-lg btn-block col-md-6 mx-auto" onclick="goToSigIn()">Registrarse</button> -->
+</div>
+
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "navbar-logueado.html" %}
+
+{% block content %}
+
+<!-- EDITAR TODO ESTO, NO ESTA NDA HECHO -->
+
+<script>
+
+    var cantProd;
+    var users = [];
+    var dataDonut = [];
+    var dataBar = [];
+    function getProductos() {
+        url = "/usuarios";
+        $.getJSON(url).done(function (user) {
+            cantUser = user.length;
+            user.map(async e => {
+                await users.push(e);
+            })
+
+            url1 = "/prize/all";
+            let data;
+            $.getJSON(url1).done(async function (premio) {
+                let arr = [];
+                let total = premio.length;
+
+                for (var i = 1; i <= cantUser; i++) {
+                    const name = await users.filter(users => users.id === i);
+
+                    const tot = await premio.filter(p => p.usuarioid === i);
+
+                    if (name && tot?.length > 0) {
+                        await dataDonut.push({ "label": `${name[0].nombre} ${name[0].apellido}`, "value": tot.length });
+                        await dataBar.push({ "y": name[0].nombre, "a": tot.length });
+                    }
+                }
+
+                await Morris.Donut({
+                    element: 'graficoTipoLente1',
+                    data: dataDonut,
+                    colors: ['#FF7400', '#00117A', '#BE0065'],
+                    resize: true,
+                    formatter: function (value, data) { return (value / total * 100).toFixed(1) + '%'; }
+                });
+                await Morris.Bar({
+                    element: 'graficoTipoLente2',
+                    data: dataBar,
+                    xkey: 'y',
+                    ykeys: ['a'],
+                    labels: ['Total'],
+                    barColors: ['#EA2A2A'],
+                    resize: true
+                });
+            });
+        });
+    }
+
+    getProductos();
+</script>
+
+
+<div class="container" style="margin-top:80px;">
+    <h3 style="text-align: center;">ESTADISTICAS</h3>
+    <hr />
+    <h4 style="text-align: center;">Reporte de Premios por Usuarios</h4>
+    <div class="row">
+        <div class="col-md-6">
+            <hr />
+            <div id="graficoTipoLente1">
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <hr />
+            <div id="graficoTipoLente2">
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

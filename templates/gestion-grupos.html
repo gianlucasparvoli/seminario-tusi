@@ -1,0 +1,269 @@
+{% extends "navbar-logueado.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+<style>
+    a {
+        color: black
+    }
+</style>
+<!--<style>   
+    /* Remove default bullets */
+    ul,
+    #myUL {
+        list-style-type: none;
+    }
+
+    /* Remove margins and padding from the parent ul */
+    #myUL {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Style the caret/arrow */
+    .caret {
+        cursor: pointer;
+        user-select: none;
+        /* Prevent text selection */
+    }
+
+    /* Create the caret/arrow with a unicode, and style it */
+    .caret::before {
+        content: "\25B6";
+        color: black;
+        display: inline-block;
+        margin-right: 6px;
+    }
+
+    /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+    .caret-down::before {
+        transform: rotate(90deg);
+    }
+
+    /* Hide the nested list */
+    .nested {
+        display: none;
+    }
+
+    /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+    .active {
+        display: block;
+    }
+</style> -->
+
+<script>
+    function completarModulos() {
+        url = "/modulos";
+        $.getJSON(url).done(function (data) {
+            $('#selectModulos').empty();
+            $('#selectModulos').append(
+                ' <option selected disabled value="seleccione">Seleccione...</option>'
+            )
+            data.map(e => {
+                $('#selectModulos').append(
+                    '<option value=' + e.id + '>' + e.nombre + '</option>'
+                )
+            })
+
+
+        })
+    }
+
+    function completarFormularios() {
+        var selectModulos = document.getElementById("selectModulos");
+        var selectedValue = selectModulos.options[selectModulos.selectedIndex].value;
+        url2 = "/formulario-mod/" + selectedValue;
+        $.getJSON(url2).done(function (data) {
+            $('#selectFormulario').empty();
+            $('#selectFormulario').append(
+                ' <option selected disabled value="seleccione">Seleccione...</option>'
+            )
+            data.map(e => {
+                $('#selectFormulario').append(
+                    '<option value=' + e.id + '>' + e.nombre + '</option>'
+                )
+            })
+        })
+    }
+
+    function completarAcciones() {
+        var selectFormulario = document.getElementById("selectFormulario");
+        var selectedValue = selectFormulario.options[selectFormulario.selectedIndex].value;
+        url2 = "/accion-formulario/" + selectedValue;
+        $.getJSON(url2).done(function (data) {
+            $('#cbAcciones').empty();
+            data.map(e => {
+                $('#cbAcciones').append(
+                    '<input type="checkbox" value=' + e.id + ' id="cbAccion' + e.id +
+                    '" onclick="obtenerAcciones(' + e.id + ')"> ' + e.nombre + '<br>'
+                )
+            })
+        })
+    }
+
+    let arrayAcciones = [];
+
+    function obtenerAcciones(id) {
+        var selectFormulario = document.getElementById("cbAccion" + id);
+        if (selectFormulario.checked == true) {
+            arrayAcciones.push(selectFormulario.value)
+        } else {
+            const index = arrayAcciones.indexOf(selectFormulario.value);
+            if (index > -1) {
+                arrayAcciones.splice(index, 1)
+            }
+        }
+    }
+
+    function guardarGrupo() {
+        var selectEstado = document.getElementById("selectEstado");
+        var estado = selectEstado.options[selectEstado.selectedIndex].value;
+        var nombreGrupo = document.getElementById("nombreGrupo").value;
+
+        context = {
+            'estado': estado,
+            'nombreGrupo':nombreGrupo
+        }
+        console.log(context)
+        console.log("/add-acciones-grupo/"+1 + "/"+arrayAcciones)
+        
+        // $.ajax({
+        //     url: '/add-grupo',
+        //     type: 'POST',
+        //     data: context,
+        //     success: function (idgrupo) {
+        //         console.log(idgrupo)
+        //         window.location.href = "/add-acciones-grupo/"+idgrupo + "/"+arrayAcciones;
+        //         // falta  'arrayAcciones': arrayAcciones en acciones_grupo
+        //     }
+        // });
+    }
+
+    completarModulos();
+</script>
+
+<form style="margin-top:100px;">
+    <div class="form-group">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for m in messages %}
+        <div class="alert alert-success text-center">{{ m }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+</form>
+
+<div class="col-sm-12">
+    <h2 style="text-align: center;">Gestionar Grupos</h2>
+    <br></br>
+</div>
+<!-- <ul class="nav nav-tabs" id="tablaModulos" name="tablaModulos" role="tablist">
+    <li class="dropdown-submenu">
+    <li class="nav-item">
+      <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Home</a>
+    </li>
+    </li>
+</ul> -->
+<div class="container">
+    <div class="row col-sm-12">
+        <div class="col-sm-9">
+            <ul id="myUL">
+                <li id="tablaModulos" name="tablaModulos">
+                    <span class="caret"><a href="#">Seguridad</a></span>
+                    <ul class="nested">
+                        <li id="tablaformulario" name="tablaformulario">
+                            <span class="caret"><a href="#">Usuarios</a></span>
+                            <ul class="nested">
+                                <li><a href="#">Agregar Usuario</a></li>
+                                <li><a href="#">Modificar Usuario</a></li>
+                                <li><a href="#">Eliminar Usuario</a></li>
+                                <li><a href="#">Resetear Clave</a></li>
+                            </ul>
+                        </li>
+                        <li id="tablaformulario" name="tablaformulario">
+                            <span class="caret"><a href="#">Grupos</a></span>
+                            <ul class="nested">
+                                <li><a href="#">Agregar Grupo</a></li>
+                                <li><a href="#">Modificar Grupo</a></li>
+                                <li><a href="#">Eliminar Grupo</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="col-sm-3">
+            <br>
+            <div class="col-sm">
+                <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#modalAddGrupo">Agregar
+                    Grupo</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal Add grupo-->
+<div class="modal fade" id="modalAddGrupo" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Agregar Accion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Elija un modulo:</label>
+                        <select class="form-control" id="selectModulos" onchange="completarFormularios();"></select>
+
+                        <label for="recipient-name" class="col-form-label">Elija un formulario:</label>
+                        <select class="form-control" id="selectFormulario" onchange="completarAcciones();"></select>
+
+                        <label for="recipient-name" class="col-form-label">Elija acciones:</label>
+                        <div id="cbAcciones"></div>
+                        <!-- <input type="checkbox" class="form-control" id="exampleFormControlSelect1"> -->
+
+                        <label for="recipient-name" class="col-form-label">Elija estado:</label>
+                        <select class="form-control" id="selectEstado">
+                            <option value="1"> Activado</option>
+                            <option value="2"> Desactivado</option>
+                        </select>
+
+                        <label for="recipient-name" class="col-form-label">Nombre:</label>
+                        <input type="text" class="form-control" id="nombreGrupo">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarGrupo();">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if value %}
+<p id="idUserLogueado" style="visibility: hidden;">{{ value }}</p>
+{% endif %}
+
+<!-- <script>
+    var toggler = document.getElementsByClassName("caret");
+    var i;
+
+    for (i = 0; i < toggler.length; i++) {
+        toggler[i].addEventListener("click", function () {
+            this.parentElement.querySelector(".nested").classList.toggle("active");
+            this.classList.toggle("caret-down");
+        });
+    }
+</script> -->
+
+{% endblock %}

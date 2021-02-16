@@ -1,0 +1,26 @@
+INSERT INTO estado__grupo (nombre) VALUES ('Activado');
+INSERT INTO estado__grupo (nombre) VALUES ('Desactivado');
+----------------------------------------------------------------------
+INSERT INTO modulo (nombre) VALUES ('Seguridad');
+INSERT INTO formulario (modulo,nombre) VALUES (1,'Usuarios');
+INSERT INTO accion (formulario,nombre) VALUES (1,'Agregar Usuario');
+INSERT INTO accion (formulario,nombre) VALUES (1,'Modificar Usuario');
+INSERT INTO accion (formulario,nombre) VALUES (1,'Eliminar Usuario');
+INSERT INTO accion (formulario,nombre) VALUES (1,'Resetear Clave');
+-----------------------------------------------------------------------
+INSERT INTO grupo (nombre,estado_grupo) VALUES ('Administrador',1);
+INSERT INTO grupo (nombre,estado_grupo) VALUES ('Cajero',1);
+INSERT INTO grupo (nombre,estado_grupo) VALUES ('Grupo 3',1);
+INSERT INTO grupo (nombre,estado_grupo) VALUES ('Grupo 4',2);
+
+INSERT INTO acciones__grupo (grupoid,accionid) VALUES (1,1);
+INSERT INTO acciones__grupo (grupoid,accionid) VALUES (1,2);
+INSERT INTO acciones__grupo (grupoid,accionid) VALUES (1,3);
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+
+
+INSERT INTO formulario (modulo,nombre) VALUES (1,'Grupos');
+INSERT INTO accion (formulario,nombre) VALUES (2,'Agregar Grupo');
+INSERT INTO accion (formulario,nombre) VALUES (2,'Modificar Grupo');
+INSERT INTO accion (formulario,nombre) VALUES (2,'Eliminar Grupo');
