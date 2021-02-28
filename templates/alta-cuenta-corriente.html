@@ -1,0 +1,161 @@
+{% extends "navbar-logueado.html" %}
+
+{% block content %}
+<script>
+
+    function getClientes() {
+        url = "/usuarios";
+        $.getJSON(url).done(function (prod) {
+            dl = prod.length;
+            $("#Usuario").empty();
+            $('#Usuario').append(
+                '<option value="nothing" disabled selected>Seleccione...</option>'
+            );
+            prod.forEach(function (obj) {
+                $('#Usuario').append(
+                    '<option value="' + obj.id + '">' + obj.nombre + " "+ obj.apellido +'</option>'
+                );
+            });
+        });
+    }
+
+    function getProductos() {
+        url = "/product/all";
+        $.getJSON(url).done(function (prod) {
+            dl = prod.length;
+            $("#productos").empty();
+            prod.forEach(function (obj) {
+                $('#productos').append(
+                    '<input type="checkbox" id="cb' + obj.id + '" value="' + obj.id + '" name="' + obj.nombre + '" onclick="clickProd(cb' + obj.id + ','+obj.precio+')"> <label for="cb' + obj.id + '">' + obj.nombre + '</label><br/>'
+                );
+                $('#numjugada').append(
+                    '<input type="text" class="form-control" id="jugada' + obj.id + '" placeholder="Num. Jugada ' + obj.nombre + '" style="display:none"><br/>'
+                );
+            });
+        });
+    }
+
+    let total = 0;
+
+    function clickProd(e,precio) {
+       if(e.checked) {
+           total = total + precio;
+           document.getElementById("jugada" + e.value).style.display = "block";
+       }else {
+           document.getElementById("jugada" + e.value).style.display = "none";
+           total = total - precio;
+       }
+       document.getElementById("Total").value = "$ " + total;
+    }
+
+    function btn_guardar() {
+
+        cliente = document.getElementById("Usuario").value;
+        observaciones = document.getElementById("Observaciones").value;
+
+        let jsonOfProdPlay = {};
+        let arrayJsonProdPlay = [];
+        url = "/product/all";
+        $.getJSON(url).done(function  (prod) {
+            prod.forEach(function (obj,i) {
+                if(document.getElementById("cb" + obj.id).checked){
+
+                    var prod =  document.getElementById("cb" + obj.id).value;
+                    var play =  document.getElementById("jugada" + obj.id).value;
+
+                    jsonOfProdPlay = {producto : prod , num_jugada : play};
+                    arrayJsonProdPlay.push(jsonOfProdPlay)
+                }
+            })
+            
+            const jsonToSend = {
+                cliente,
+                prodYJug : arrayJsonProdPlay,
+                observaciones,
+                total,
+                cantProd : arrayJsonProdPlay.length
+            }
+
+            console.log(jsonToSend)
+
+        if (cliente == "nothing") {
+            alert("Debe seleccionar algun Cliente")
+        }else if (total == 0) {
+            alert("Debe seleccionar algun Producto")
+        }else{
+
+            $.ajax({
+            url:"/current-account/add",
+            type:"POST",
+            data: jsonToSend,
+            success: function(response){
+                console.log(response)
+            },
+            error: function(error){
+            //console.log(error);
+            },
+            });
+
+        }
+
+        })
+
+        
+        //FALTA ENVIAR TODO EN UN POST. LOS DATOS YA ESTAN BIEN
+        
+      
+    }
+
+    getClientes();
+    getProductos();
+</script>
+
+
+<form style="margin-top:80px;" >
+    <!-- Para alerta de Flash /viene desde python) -->
+    <div class="form-group">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for m in messages %}
+        <div class="alert alert-success text-center">{{ m }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+    <!-- Arranca el Formulario -->
+    <h1 class="text-center">Registrar Cuenta Corriente</h1>
+    <br></br>
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label>Cliente</label>
+            <select class="form-control " id="Usuario" name="Usuario">
+            </select>
+        </div>
+        <div class="form-group col-md-12">
+            <label>Productos</label>
+            <div id="productos"></div>
+            </select>
+        </div>
+        <div class="form-group col-md-12">
+            <label>Num. Jugada</label>
+            <div id="numjugada"></div>
+            <!-- <input type="text" class="form-control" id="j" name="j" placeholder="Num. Jugada"> -->
+        </div>
+        <div class="form-group col-md-12">
+            <label>Observaciones</label>
+            <textarea class="form-control" id="Observaciones" name="Observaciones" placeholder="Observaciones"></textarea>
+        </div>
+        <div class="form-group col-md-12">
+            <label>Total</label>
+            <input type="text" class="form-control" id="Total" name="Total" placeholder="Total" readonly>
+        </div>
+    </div>
+    <br></br>
+    <div class="form-group col-md-4 m-auto">
+        <button class="btn btn-primary form-control" onclick="btn_guardar();">Guardar</button>
+    </div>
+
+</form>
+
+
+{% endblock %}

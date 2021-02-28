@@ -262,4 +262,47 @@ class PremioSchema(ma.Schema):
 premio_schema = PremioSchema()  #Uno solo (POST,GET)
 premios_schema = PremioSchema(many=True) #Varios (GET)
 
+
+class Cuenta_Corriente(db.Model):
+    id=db.Column(db.Integer, primary_key=True,nullable=False)
+    clienteid=db.Column(db.Integer, ForeignKey('cliente.id'))
+    observaciones=db.Column(db.String(200),nullable=False)
+    fechamov=db.Column(db.String(50),nullable=False)
+    monto=db.Column(db.Integer,nullable=False)
+
+
+    clienteidFK = relationship(Cliente)
+
+    def __init__(self, clienteid, observaciones,fechamov,monto):
+        self.clienteid = clienteid
+        self.observaciones = observaciones
+        self.fechamov = fechamov
+        self.monto = monto
+
+class Cuenta_CorrienteSchema(ma.Schema):
+    class Meta:
+        fields = ('id','clienteid', 'observaciones','fechamov','monto')
+cuenta_corriente_schema = Cuenta_CorrienteSchema()  #Uno solo (POST,GET)
+cuentas_corrientes_schema = Cuenta_CorrienteSchema(many=True) #Varios (GET)
+
+class ProductosCC(db.Model):
+    id=db.Column(db.Integer, primary_key=True,nullable=False)
+    productoid=db.Column(db.Integer, ForeignKey('producto.id'))
+    num_jugada=db.Column(db.String(100),nullable=False)
+    cuenta_corrienteid = db.Column(db.Integer, ForeignKey('cuenta__corriente.id'))
+
+    productoidFK = relationship(Producto)
+    cuenta_corrienteidFK = relationship(Cuenta_Corriente)
+
+    def __init__(self, productoid, num_jugada,cuenta_corrienteid):
+        self.productoid = productoid
+        self.num_jugada = num_jugada
+        self.cuenta_corrienteid = cuenta_corrienteid
+
+class ProductosCCSchema(ma.Schema):
+    class Meta:
+        fields = ('id','productoid', 'num_jugada', 'cuenta_corrienteid')
+productoCC_schema = ProductosCCSchema()  #Uno solo (POST,GET)
+productosCC_schema = ProductosCCSchema(many=True) #Varios (GET)
+
 db.create_all()

@@ -20,6 +20,7 @@ from routes.producto import *
 from routes.cliente import *
 from routes.ventas import *
 from routes.premio import *
+from routes.cuenta_corriente import *
 
 #from routes.routes import *
 
