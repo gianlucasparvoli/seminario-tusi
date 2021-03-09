@@ -12,6 +12,10 @@ class sellEndPoint(MethodView):
     def get(self):
         return render_template("alta-ventas.html")
 
+class sellMenuEndPoint(MethodView):
+    def get(self):
+        return render_template("menu-alta-ventas.html")
+
 class sellAddEndPoint(MethodView):
     def post(self):
         clienteid = request.form['Cliente']
