@@ -21,6 +21,7 @@ class currentAccountAddEndPoint(MethodView):
     def post(self):
         
         cliente = request.form['cliente']
+        print(cliente)
         #prodYJug = request.form['prodYJug[0][producto]']
         observaciones = request.form['observaciones']
         total = request.form['total']
@@ -58,10 +59,15 @@ class currentAccountAllEndPoint(MethodView):
     def get(self):
         cc = Cuenta_Corriente.query.all()
         s = cuentas_corrientes_schema.dump(cc)
+        return jsonify(s)
+
+class currentAccountProdAllEndPoint(MethodView):
+    def get(self):
         productoscc = ProductosCC.query.all()
         x = productosCC_schema.dump(productoscc)
-        return jsonify(s,x)
+        return jsonify(x)
 
-# class prizeReportEndPoint(MethodView):
-#     def get(self):
-#         return render_template("reportes-premios.html")
+
+class currentAccountEndPoint(MethodView):
+    def get(self):
+        return render_template("gestion-cuenta-corriente.html")
