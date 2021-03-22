@@ -67,6 +67,15 @@ class currentAccountProdAllEndPoint(MethodView):
         x = productosCC_schema.dump(productoscc)
         return jsonify(x)
 
+#class currentAccountClientEndPoint(MethodView):
+    # def get(self):  
+    #     # FALTA VER COMO OBTENER TODO POR ID DE CLIETNE
+    #     cliente = Cliente.query.filter_by(id=id).all()
+    #     s = clientes_schema.dump(cliente)
+    #     return jsonify(s)
+    #     productoscc = ProductosCC.query.all()
+    #     x = productosCC_schema.dump(productoscc)
+    #     return jsonify(x)
 
 class currentAccountEndPoint(MethodView):
     def get(self):

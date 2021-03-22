@@ -7,88 +7,107 @@
 
 <script>
 
-    function getCC() {
+
+    function getDate() {
+        var today = new Date();
+
+        document.getElementById("date-selected-initial").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+        document.getElementById("date-selected-final").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+
+    }
+
+    function getCC(clientSelected, dateInitial, dateFinal) {
+
         urlCC = "/current-account/cc/all";
         urlProdCC = "/current-account/productos/cc/all";
+        
+        var fechaInitial, fechaFinal;
+        if (dateInitial) fechaInitial = new Date(dateInitial.value);
+        if (dateFinal) fechaFinal = new Date(dateFinal.value);
         $.getJSON(urlCC).done(function (cc) {
             $("#tr_cargartabla").empty();
             $.getJSON(urlProdCC).done(function (prodcc) {
                 prodcc.forEach(function (objProdcc) {
                     cc.forEach(function (objcc) {
                         var fechaAux = new Date(objcc.fechamov)
-                        if (objProdcc.cuenta_corrienteid === objcc.id) {
-
-                            $('#tr_cargartabla').append(
-                                '<tr>' +
-                                '<td>' + objcc.id + '</td>' +
-                                '<td id="client-id' + objcc.clienteid + '"></td>' +
-                                '<td id="producto-id' + objProdcc.productoid + '"</td>' +
-                                '<td>' + objProdcc.num_jugada + '</td>' +
-                                '<td id="monto-id' + objProdcc.productoid + '"></td>' +
-                                '<td>' + fechaAux.getDate() + "/" + (fechaAux.getMonth() + 1) + "/" + fechaAux.getFullYear() + " " + fechaAux.getHours() + ":" + (fechaAux.getMinutes() + 1) + '</td>' +
-                                '</tr>'
-                            );
-
-
-                            url1 = "/client/" + objcc.clienteid;
-                            $.getJSON(url1).done(function (client) {
-                                $("#client-id" + objcc.clienteid).empty();
-                                client.forEach(function (cliente) {
-                                    $('#client-id' + objcc.clienteid).append(cliente.nombre);
-                                })
-                            });
-
-                            url2 = "/product/" + objProdcc.productoid;
-                            $.getJSON(url2).done(function (product) {
-                                $("#producto-id" + objProdcc.productoid).empty();
-                                $('#monto-id' + objProdcc.productoid).empty();
-                                product.forEach(function (prod) {
-                                    $('#producto-id' + objProdcc.productoid).append(prod.nombre);
-                                    $('#monto-id' + objProdcc.productoid).append("$ " + prod.precio);
-                                });
-                            });
-
+                        if (clientSelected && clientSelected.value != "all") {
+                            if (fechaInitial <= fechaAux && fechaFinal >= fechaAux) {
+                                if (objProdcc.cuenta_corrienteid === objcc.id && objcc.clienteid === parseInt(clientSelected.value)) {
+                                    listSearchedElements(objcc, objProdcc, fechaAux);
+                                }
+                            }
+                        } else {
+                            if (fechaInitial <= fechaAux && fechaFinal >= fechaAux) {
+                                if (objProdcc.cuenta_corrienteid === objcc.id) {
+                                    listSearchedElements(objcc, objProdcc, fechaAux);
+                                }
+                            }
                         }
+
                     });
 
                 })
             })
         })
+
     }
-    // vent.forEach(function (obj) {
-    //     console.log(obj)
-    //     var fechaAux = new Date(obj.fecha);
-    //     $('#tr_cargartabla').append(
-    //         '<tr>' +
-    //         '<td>' + obj.id + '</td>' +
-    //         '<td id="usuario-id' + obj.id + '"></td>' +
-    //         '<td id="producto-id' + obj.id + '"></td>' +
-    //         '<td>' + obj.cantidad + '</td>' +
-    //         '<td>' + fechaAux.getDate() + "/" + (fechaAux.getMonth() + 1) + "/" + fechaAux.getFullYear() + " " + fechaAux.getHours() + ":" + (fechaAux.getMinutes() + 1) + '</td>' +
-    //         '<td>$ ' + obj.premio + '</td>' +
-    //         '</tr>'
-    //     );
 
-    //     url1 = "/usuario/" + obj.usuarioid;
-    //     $.getJSON(url1).done(function (client) {
-    //         dl = client.length;
-    //         $("#usuario-id" + obj.id).empty();
-    //         $('#usuario-id' + obj.id).append(client.nombre + " " + client.apellido);
-    //     });
+    function listSearchedElements(objcc, objProdcc, fechaAux) {
+        $('#tr_cargartabla').append(
+            '<tr>' +
+            '<td>' + objcc.id + '</td>' +
+            '<td id="client-id' + objcc.clienteid + '"></td>' +
+            '<td id="producto-id' + objProdcc.productoid + '"</td>' +
+            '<td>' + objProdcc.num_jugada + '</td>' +
+            '<td id="monto-id' + objProdcc.productoid + '"></td>' +
+            '<td>' + fechaAux.getDate() + "/" + (fechaAux.getMonth() + 1) + "/" + fechaAux.getFullYear() + " " + fechaAux.getHours() + ":" + (fechaAux.getMinutes() + 1) + '</td>' +
+            '</tr>'
+        );
 
-    //     url2 = "/product/" + obj.productoid;
-    //     $.getJSON(url2).done(function (product) {
-    //         dl = product.length;
-    //         $("#producto-id" + obj.id).empty();
-    //         product.forEach(function (prod) {
-    //             $('#producto-id' + obj.id).append(prod.nombre);
-    //         });
-    //     });
 
-    // });
+        url1 = "/client/" + objcc.clienteid;
+        $.getJSON(url1).done(function (client) {
+            $("#client-id" + objcc.clienteid).empty();
+            client.forEach(function (cliente) {
+                $('#client-id' + objcc.clienteid).append(cliente.nombre);
+            })
+        });
 
+        url2 = "/product/" + objProdcc.productoid;
+        $.getJSON(url2).done(function (product) {
+            $("#producto-id" + objProdcc.productoid).empty();
+            $('#monto-id' + objProdcc.productoid).empty();
+            product.forEach(function (prod) {
+                $('#producto-id' + objProdcc.productoid).append(prod.nombre);
+                $('#monto-id' + objProdcc.productoid).append("$ " + prod.precio);
+            });
+        });
+    }
+
+    function showClients() {
+        urlClient = "/client/all";
+        $.getJSON(urlClient).done(function (clients) {
+            $("#client-selected").empty();
+            $('#client-selected').append(
+                '<option selected disabled value="default">Seleccione cliente...</option>' +
+                '<option value="all">TODOS</option>'
+            );
+            clients.forEach(function (client) {
+                $('#client-selected').append(
+                    '<option value=' + client.id + '>' + client.nombre + '</option>'
+                );
+            });
+
+        })
+    }
+
+    window.onload = function () {
+        getDate();
+    };
 
     getCC();
+    showClients();
+
 
 </script>
 
@@ -112,6 +131,26 @@
                     </div>
                 </div>
             </div>
+            <div class="form-row p-2">
+                <label class="form-select form-group col-md-5 m-auto"> Seleccione Cliente: </label>
+                <label class="form-select form-group col-md-2 m-auto"> Selec. Fecha Inicio: </label>
+                <label class="form-select form-group col-md-2 m-auto"> Selec. Fecha Fin: </label>
+            </div>
+            <div class="form-row p-2">
+                <select class="form-select form-group col-md-5 m-auto" id="client-selected"
+                    aria-label="Default select example"
+                    onchange="getCC(this,document.getElementById('date-selected-initial'),document.getElementById('date-selected-final'))">
+                </select>
+                <input type="date" onload="getDate()" id="date-selected-initial"
+                    class="form-select form-group col-md-2 m-auto"
+                    onchange="getCC(document.getElementById('client-selected'),this,document.getElementById('date-selected-final'))">
+                </input>
+                <input type="date" onload="getDate()" id="date-selected-final"
+                    class="form-select form-group col-md-2 m-auto"
+                    onchange="getCC(document.getElementById('client-selected'),document.getElementById('date-selected-initial'),this)">
+                </input>
+            </div>
+            <br />
             <table class="table table-striped table-hover">
                 <thead class="thead-dark">
                     <tr>
@@ -124,61 +163,11 @@
                     </tr>
                 </thead>
                 <tbody id="tr_cargartabla">
-                    <!-- <tr id="tr_cargartabla">
-                        
-                    </tr>  -->
                 </tbody>
             </table>
         </div>
     </div>
-    <!-- Edit Modal HTML -->
-    <div id="editEmployeeModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form action="/modificar-producto" method="POST">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Editar producto</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body" id="form-editar">
-
-                    </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancelar">
-                        <input type="submit" class="btn btn-info" value="Guardar">
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- Delete Modal HTML -->
-    <div id="deleteEmployeeModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form>
-                    <div class="modal-header">
-                        <h4 class="modal-title">Eliminar producto</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <p>¿Desea eliminar este registro?</p>
-                        <p class="text-warning"><small>Esta accion no puede ser cambiada</small></p>
-                    </div>
-                    <div class="modal-footer" id="btn-eliminar">
-
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+   
 </form>
-<!-- 
-{% if value %}
-    <p id="idUserLogueado" style="visibility: hidden;">{{ value }}</p>
-{% endif %} -->
-
-<!-- <script>
-    getUsuarios();
-</script> -->
 
 {% endblock %}
