@@ -57,8 +57,14 @@ class clientAddEndPoint(MethodView):
         nombre = request.form['Nombre']
         direccion = request.form['Direccion']
         telefono = request.form['Telefono']
-        
-        new_prod= Cliente(nombre,direccion,telefono)
+        estado = request.form['Estado']
+        formaDePago = request.form['FormaDePago']
+        cbu = request.form['CBU']
+        formaDePagoCBU = request.form['FormaDePagoCBU']
+        banco = request.form['Banco']
+
+        #print(nombre,direccion,telefono,estado,formaDePago,cbu,formaDePagoCBU,banco)
+        new_prod= Cliente(nombre,direccion,telefono,estado,formaDePago,cbu,formaDePagoCBU,banco)
         db.session.add(new_prod)
         db.session.commit()
                 

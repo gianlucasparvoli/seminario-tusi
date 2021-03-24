@@ -202,15 +202,27 @@ class Cliente(db.Model):
     nombre=db.Column(db.String(50),nullable=False)
     direccion=db.Column(db.String(50),nullable=False)
     telefono=db.Column(db.String(50),nullable=False)
+    estado=db.Column(db.String(6),nullable=False)
+    formaDePago=db.Column(db.String(50),nullable=False)
+    cbu=db.Column(db.String(50))
+    formaDePagoCbu=db.Column(db.String(50))
+    bancoCbu=db.Column(db.String(50))
 
-    def __init__(self, nombre, direccion, telefono):
+    def __init__(self, nombre, direccion, telefono, estado, formaDePago, cbu, formaDePagoCbu, bancoCbu):
         self.nombre = nombre
         self.direccion = direccion
         self.telefono = telefono
+        self.estado = estado
+        self.formaDePago = formaDePago
+        self.cbu = cbu
+        self.formaDePagoCbu = formaDePagoCbu
+        self.bancoCbu = bancoCbu
+
+
 
 class ClienteSchema(ma.Schema):
     class Meta:
-        fields = ('id','nombre','direccion', 'telefono')
+        fields = ('id','nombre','direccion', 'telefono', 'estado', 'formaDePago', 'cbu', 'formaDePagoCbu', 'bancoCbu')
 cliente_schema = ClienteSchema()  #Uno solo (POST,GET)
 clientes_schema = ClienteSchema(many=True) #Varios (GET)
 

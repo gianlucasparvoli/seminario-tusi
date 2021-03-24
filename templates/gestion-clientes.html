@@ -13,12 +13,31 @@
             dl = prod.length;
             $("#tr_cargartabla").empty();
             prod.forEach(function (obj) {
+                
+                let estado = "Desactivo";
+                if (obj.estado === "true") estado = "Activo";
+
+                let cbu = "";
+                if (obj.cbu) cbu = obj.cbu;
+
+                let viewCBU;
+                if (cbu !== "") {
+                    viewCBU = '<td><a href="#viewCBUModal" onclick="modalCbu(' + cbu + ') " data-toggle="modal">Ver CBU</a></td>'
+                } else {
+                    viewCBU = '<td> </td>'
+                }
+
                 $('#tr_cargartabla').append(
                     '<tr>' +
                     '<td>' + obj.id + '</td>' +
                     '<td>' + obj.nombre + '</td>' +
                     '<td>' + obj.direccion + '</td>' +
                     '<td>' + obj.telefono + '</td>' +
+                    '<td>' + estado + '</td>' +
+                    '<td>' + obj.formaDePago + '</td>' +
+                    viewCBU +
+                    '<td>' + obj.formaDePagoCbu + '</td>' +
+                    '<td>' + obj.bancoCbu + '</td>' +
                     '<td id="qwerty">' +
                     '<a href="#editEmployeeModal" id=grupomodif' + obj.id + ' onclick="getProdXId(' + obj.id + ');" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Editar">&#xE254;</i></a>' +
                     '<a href="#" id=grupodel' + obj.id + ' onclick="btnEliminar(' + obj.id + ');" class="delete" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Borrar">&#xE872;</i></a>' +
@@ -61,7 +80,7 @@
 
     function btnEliminar(id) {
         if (window.confirm("¿Realmente desea eliminar este producto?")) {
-            url = "/client/"+id;
+            url = "/client/" + id;
             $.ajax({
                 url: url,
                 type: 'DELETE',
@@ -74,6 +93,13 @@
         }
     }
 
+    function modalCbu(cbu) {
+        $('#view-cbu').empty();
+
+        $('#view-cbu').append(
+            '<label>'+ cbu +'</label>' 
+        );
+    }
 
     getProductos();
 
@@ -106,6 +132,11 @@
                         <th>Nombre</th>
                         <th>Direccion</th>
                         <th>Telefono</th>
+                        <th>Estado</th>
+                        <th>Forma de Pago</th>
+                        <th>CBU</th>
+                        <th>Cobro CBU</th>
+                        <th>Banco</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -154,6 +185,19 @@
 
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    <!-- View CBU Modal HTML -->
+    <div id="viewCBUModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">CBU</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-footer" id="view-cbu">
+                </div>
             </div>
         </div>
     </div>
