@@ -1,0 +1,230 @@
+{% extends "navbar-logueado.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+<script>
+    function getMiLoteria() {
+        url = "/lottery/1";
+        $.getJSON(url).done(function (loteria) {
+            $("#NombreLoteria").empty();
+            $("#CBU").empty();
+            $("#Banco").empty();
+            $("#TipoCuenta").empty();
+            $("#Saldo").empty();
+            $("#AliasCBU").empty();
+            loteria.forEach(function (obj) {
+
+                // para mostrar el nunmero original (JS lo parsea solo)
+                var x = obj.cbu;
+                var e = parseInt(x.toString().split('+')[1]);
+                if (e > 20) {
+                    e -= 20;
+                    x /= Math.pow(10, e);
+                    x += (new Array(e + 1)).join('0');
+                }
+
+                document.getElementById("CBU").value = x;
+                document.getElementById("NombreLoteria").value = obj.nombre;
+                document.getElementById("Banco").value = obj.banco;
+                document.getElementById("TipoCuenta").value = obj.tipoCuenta;
+                document.getElementById("Saldo").innerHTML = "$ " + obj.saldoActual;
+                document.getElementById("AliasCBU").value = obj.aliasCbu;
+            });
+        });
+
+    }
+
+    function save_movement(sign) {
+        let valor = null;
+        if (sign === "-") {
+            if (document.getElementById("ValorDebt").value)
+                valor = parseInt("-" + document.getElementById("ValorDebt").value);
+        } else {
+            if (document.getElementById("ValorCred").value)
+                valor = parseInt(document.getElementById("ValorCred").value);
+        }
+
+        const jsonToSend = {
+            valor,
+            fecha: new Date(),
+            comentario: "prueba"
+        }
+
+        if (valor) {
+            $.ajax({
+                url: "/lottery/movement",
+                type: "POST",
+                data: jsonToSend,
+                success: function (response) {
+                    location.reload();
+                },
+                error: function (error) {
+                    console.log(error);
+                },
+            });
+        } else {
+            alert("Complete los campos")
+        }
+
+    }
+
+    getMiLoteria();
+
+</script>
+
+
+<div class="form-group" style="margin-top:100px;">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for m in messages %}
+    <div class="alert alert-success text-center">{{ m }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+
+<div class="form-row" style="text-align: center;">
+    <h2 class="col-md-12 m-auto">Gestionar Mi Loteria
+        <a href="#editLotteryInfoModal" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip"
+                title="Editar">&#xE254;</i></a>
+    </h2>
+</div>
+<br></br>
+<div class="form-row">
+    <br></br>
+    <div class="form-group col-md-4">
+        <label>Nombre Loteria</label>
+        <input type="text" class="form-control text-center" id="NombreLoteria" name="NombreLoteria"
+            placeholder="Nombre Loteria" readonly>
+    </div>
+    <div class="form-group col-md-4">
+        <label>Banco</label>
+        <input type="text" class="form-control text-center" id="Banco" name="Banco" placeholder="Banco" readonly>
+    </div>
+    <div class="form-group col-md-4">
+        <label>Tipo Cuenta</label>
+        <input type="text" class="form-control text-center" id="TipoCuenta" name="TipoCuenta"
+            placeholder="Tipo de Cuenta" readonly>
+    </div>
+    <div class="form-group col-md-6">
+        <label>CBU</label>
+        <input type="text" class="form-control text-center" id="CBU" name="CBU" placeholder="CBU" readonly>
+    </div>
+    <div class="form-group col-md-6">
+        <label>Alias CBU</label>
+        <input type="text" class="form-control text-center" id="AliasCBU" name="AliasCBU" placeholder="Alias CBU"
+            readonly>
+    </div>
+    <div class="form-group col-md-12" style="margin-top: 50px; margin-bottom: 50px;">
+        <div class="card border-success m-auto p-1" style="width: 18rem; text-align: center;">
+            <div class="card-body">
+                <h5 class="card-title">Saldo Actual</h5>
+                <h1 class="display-4 text-center" id="Saldo" style="color:darkgreen">$$$$$$$$</h1>
+            </div>
+            <a class="text-muted" href="#"> 
+                Ver Movimientos
+            </a>
+        </div>
+    </div>
+    <br></br>
+    <div class="form-group col-md-5 m-auto">
+        <button type="button" class="btn btn-primary form-control" data-toggle="modal" data-target="#DebtModal">Debito
+            (-)</button>
+    </div>
+    <div class="form-group col-md-5 m-auto">
+        <button type="button" class="btn btn-primary form-control" data-toggle="modal" data-target="#CredModal">Credito
+            (+)</button>
+    </div>
+    <br></br>
+</div>
+
+
+<!-- Edit Modal HTML -->
+<div id="editLotteryInfoModal" class="modal fade">
+    <div class="modal-dialog">
+        <form class="modal-content" action="/lottery" method="POST">
+            <br></br>
+            <h3 class="form-group col-md-12 text-center">Editar</h3>
+            <div class="form-group col-md-12">
+                <label>Nombre Loteria</label>
+                <input type="text" class="form-control" id="NombreLoteriaNuevo" name="NombreLoteriaNuevo"
+                    placeholder="Nombre Loteria" required>
+            </div>
+            <div class="form-group col-md-12">
+                <label>CBU</label>
+                <input type="text" class="form-control" id="CBUNuevo" name="CBUNuevo" placeholder="CBU" required>
+            </div>
+            <div class="form-group col-md-12">
+                <label>Alias CBU</label>
+                <input type="text" class="form-control" id="AliasCBUNuevo" name="AliasCBUNuevo" placeholder="Alias CBU"
+                    required>
+            </div>
+            <div class="form-group col-md-12">
+                <label>Tipo Cuenta</label>
+                <input type="text" class="form-control" id="TipoCuentaNuevo" name="TipoCuentaNuevo"
+                    placeholder="Tipo de Cuenta" required>
+            </div>
+            <div class="form-group col-md-12">
+                <label>Banco</label>
+                <input type="text" class="form-control" id="BancoNuevo" name="BancoNuevo" placeholder="Banco" required>
+            </div>
+            <div class="form-group col-md-12">
+                <label>Saldo Actual Inicial (puede ser 0)</label>
+                <input type="text" class="form-control" id="SaldoNuevo" name="SaldoNuevo" placeholder="Saldo" required>
+            </div>
+
+            <br></br>
+            <div class="form-group col-md-4 m-auto">
+                <button type="submit" class="btn btn-primary form-control">Guardar</button>
+            </div>
+            <br></br>
+        </form>
+    </div>
+</div>
+
+<!-- Debt Modal HTML -->
+<div id="DebtModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <br></br>
+            <h3 class="text-center">Coloque el valor para el debito</h3>
+            <br></br>
+            <div class="form-group col-md-12">
+                <input type="number" class="form-control" id="ValorDebt" name="ValorDebt" placeholder="Valor en Pesos">
+            </div>
+
+            <br></br>
+            <div class="form-group col-md-4 m-auto">
+                <button class="btn btn-primary form-control" onclick="save_movement('-');">Guardar</button>
+            </div>
+            <br></br>
+        </div>
+    </div>
+</div>
+
+<!-- Cred Modal HTML -->
+<div id="CredModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <br></br>
+            <h3 class="text-center">Coloque el valor para el credito</h3>
+            <br></br>
+            <div class="form-group col-md-12">
+                <input type="number" class="form-control" id="ValorCred" name="ValorCred" placeholder="Valor en Pesos"
+                    required>
+            </div>
+
+            <br></br>
+            <div class="form-group col-md-4 m-auto">
+                <button class="btn btn-primary form-control" onclick="save_movement('+');">Guardar</button>
+            </div>
+            <br></br>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

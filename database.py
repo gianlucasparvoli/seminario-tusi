@@ -317,4 +317,46 @@ class ProductosCCSchema(ma.Schema):
 productoCC_schema = ProductosCCSchema()  #Uno solo (POST,GET)
 productosCC_schema = ProductosCCSchema(many=True) #Varios (GET)
 
+
+class MiLoteria(db.Model):
+    id=db.Column(db.Integer, primary_key=True,nullable=False)
+    nombre=db.Column(db.String(50),nullable=False)
+    cbu=db.Column(db.String(50),nullable=False)
+    aliasCbu=db.Column(db.String(50),nullable=False)
+    tipoCuenta=db.Column(db.String(50),nullable=False)
+    saldoActual=db.Column(db.Integer,nullable=False)
+    banco=db.Column(db.String(50))
+
+    def __init__(self, nombre, cbu,aliasCbu, tipoCuenta, saldoActual, banco):
+        self.nombre = nombre
+        self.cbu = cbu
+        self.aliasCbu = aliasCbu
+        self.tipoCuenta = tipoCuenta
+        self.saldoActual = saldoActual
+        self.banco = banco
+
+class MiLoteriaSchema(ma.Schema):
+    class Meta:
+        fields = ('id','nombre', 'cbu','aliasCbu', 'tipoCuenta', 'saldoActual', 'banco')
+MiLoteria_schema = MiLoteriaSchema()  #Uno solo (POST,GET)
+MisLoterias_schema = MiLoteriaSchema(many=True) #Varios (GET)
+
+
+class MiLoteriaMovimientos(db.Model):
+    id=db.Column(db.Integer, primary_key=True,nullable=False)
+    fecha=db.Column(db.String(50),nullable=False)
+    valor=db.Column(db.String(50),nullable=False)
+    comentario=db.Column(db.String(50))
+
+    def __init__(self, fecha, valor, comentario):
+        self.fecha = fecha
+        self.valor = valor
+        self.comentario = comentario
+
+class MiLoteriaMovimientosSchema(ma.Schema):
+    class Meta:
+        fields = ('id','fecha', 'valor','comentario')
+MiLoteriaMovimientos_schema = MiLoteriaMovimientosSchema()  #Uno solo (POST,GET)
+MisLoteriasMovimientos_schema = MiLoteriaMovimientosSchema(many=True) #Varios (GET)
+
 db.create_all()
