@@ -1,0 +1,114 @@
+{% extends "navbar-logueado.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+<script>
+
+    function getHistoryProducts(productoSelected) {
+        console.log(productoSelected)
+        urlHistoryProd = "/products/history/all";
+
+        $.getJSON(urlHistoryProd).done(function (res) {
+            $("#tr_cargartabla").empty();
+            res.forEach(function (prdoHist) {
+                const fechaAux = new Date(prdoHist.fechaCambio)
+                //if (prdoHist.productoid === productoSelected){
+                $('#tr_cargartabla').append(
+                    '<tr>' +
+                    '<td>' + prdoHist.id + '</td>' +
+                    '<td id="product-id' + prdoHist.productoid + "-" + prdoHist.id + '"></td>' +
+                    //'<td>' + prdoHist.productoid + '</td>' +
+                    '<td>$ ' + prdoHist.valor + '</td>' +
+                    '<td>' + fechaAux.getDate() + "/" + (fechaAux.getMonth() + 1) + "/" + fechaAux.getFullYear() + " " + fechaAux.getHours() + ":" + (fechaAux.getMinutes() + 1) + '</td>' +
+                    '</tr>'
+                );
+
+                url1 = "/product/" + prdoHist.productoid;
+                $.getJSON(url1).done(function (prod) {
+                    $("#product-id" + prdoHist.productoid + "-" + prdoHist.id).empty();
+                    prod.forEach(function (producto) {
+                        $('#product-id' + prdoHist.productoid + "-" + prdoHist.id).append(producto.nombre);
+                    })
+                });
+
+            })
+
+        })
+
+    }
+
+
+    function showProducts() {
+        urlClient = "/product/all";
+        $.getJSON(urlClient).done(function (prodcutos) {
+            $("#client-selected").empty();
+            $('#client-selected').append(
+                '<option selected disabled value="default">Seleccione producto...</option>' +
+                '<option value="all">TODOS</option>'
+            );
+            prodcutos.forEach(function (prod) {
+                $('#client-selected').append(
+                    '<option value=' + prod.id + '>' + prod.nombre + '</option>'
+                );
+            });
+
+        })
+    }
+
+    window.onload = function () {
+        getHistoryProducts();
+        showProducts();
+    };
+
+
+
+
+</script>
+
+<form style="margin-top:100px;">
+    <div class="form-group">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for m in messages %}
+        <div class="alert alert-success text-center">{{ m }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+    <div class="table-responsive">
+        <div class="table-wrapper table">
+
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h2 style="text-align: center;">Historial Productos</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row p-2">
+                <select class="form-select form-group col-md-12 m-auto" id="client-selected"
+                    aria-label="Default select example" onchange="getHistoryProducts(this.value)">
+                </select>
+            </div>
+            <br />
+            <table class="table table-striped table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th></th>
+                        <th>Producto</th>
+                        <th>Valor</th>
+                        <th>Fecha Modificacion</th>
+                    </tr>
+                </thead>
+                <tbody id="tr_cargartabla">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</form>
+
+{% endblock %}

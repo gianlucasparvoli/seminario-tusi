@@ -6,6 +6,7 @@ import smtplib
 from email.mime.text import MIMEText
 import random
 import string
+import datetime
 
 class productAllEndPoint(MethodView):
     def get(self):
@@ -33,7 +34,6 @@ class modifyProductEndPoint(MethodView):
     def post(self):
         id = request.form['id']
         prod = Producto.query.get(id)
-        print(id,prod)
 
         precio = request.form['precio']
         nombre = request.form['nombre']
@@ -42,7 +42,13 @@ class modifyProductEndPoint(MethodView):
         prod.nombre=nombre
 
         db.session.commit()
-        flash("Modificacion de usuario '" + nombre + "' correcta")
+        
+        new_prodHist= ProductoHistorial(id, datetime.datetime.now(), precio)
+        db.session.add(new_prodHist)
+        db.session.commit()
+
+        db.session.close()
+
         return render_template('gestion-productos.html')
 
 class productNewEndPoint(MethodView):
@@ -66,3 +72,13 @@ class productAddEndPoint(MethodView):
 class reportProductEndPoint(MethodView):
     def get(self):
         return render_template("reporte-productos.html")
+
+class historyProductEndPoint(MethodView):
+    def get(self):
+        return render_template("productos-historial.html")
+
+class historyAllProductEndPoint(MethodView):
+    def get(self):
+        prodHist = ProductoHistorial.query.all()
+        s = ProductosHistorial_schema.dump(prodHist)
+        return jsonify(s)

@@ -359,4 +359,24 @@ class MiLoteriaMovimientosSchema(ma.Schema):
 MiLoteriaMovimientos_schema = MiLoteriaMovimientosSchema()  #Uno solo (POST,GET)
 MisLoteriasMovimientos_schema = MiLoteriaMovimientosSchema(many=True) #Varios (GET)
 
+
+class ProductoHistorial(db.Model):
+    id=db.Column(db.Integer, primary_key=True,nullable=False)
+    productoid=db.Column(db.Integer, ForeignKey('producto.id'))
+    fechaCambio=db.Column(db.String(50),nullable=False)
+    valor=db.Column(db.String(50),nullable=False)
+
+    productoidFK = relationship(Producto)
+
+    def __init__(self, productoid, fechaCambio, valor):
+        self.productoid = productoid
+        self.fechaCambio = fechaCambio
+        self.valor = valor
+
+class ProductoHistorialSchema(ma.Schema):
+    class Meta:
+        fields = ('id','productoid', 'fechaCambio','valor')
+ProductoHistorial_schema = ProductoHistorialSchema()  #Uno solo (POST,GET)
+ProductosHistorial_schema = ProductoHistorialSchema(many=True) #Varios (GET)
+
 db.create_all()

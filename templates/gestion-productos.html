@@ -56,7 +56,7 @@
 
     function btnEliminar(id) {
         if (window.confirm("¿Realmente desea eliminar este producto?")) {
-            url = "/product/"+id;
+            url = "/product/" + id;
             $.ajax({
                 url: url,
                 type: 'DELETE',
@@ -69,6 +69,33 @@
         }
     }
 
+    function OnEditProd() {
+
+        const id = document.getElementById("id").value;
+        const nombre = document.getElementById("nombre").value;
+        const precio = document.getElementById("precio").value;
+
+        const jsonToSend = {
+            id,
+            nombre,
+            precio
+        }
+
+        if (id && nombre && precio)
+            $.ajax({
+                url: "/modificar-producto",
+                type: "POST",
+                data: jsonToSend,
+                success: function (response) {
+                    console.log(response)
+                },
+                error: function (error) {
+                    console.log(error);
+                },
+            });
+        else
+            alert("Error interno")
+    }
 
     getProductos();
 
@@ -86,7 +113,6 @@
     </div>
     <div class="table-responsive">
         <div class="table-wrapper table">
-
             <div class="table-title">
                 <div class="row">
                     <div class="col-sm-12">
@@ -114,21 +140,21 @@
     <!-- Edit Modal HTML -->
     <div id="editEmployeeModal" class="modal fade">
         <div class="modal-dialog">
+            <!-- <form action="/modificar-producto" method="POST"> -->
             <div class="modal-content">
-                <form action="/modificar-producto" method="POST">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Editar producto</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body" id="form-editar">
 
-                    </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancelar">
-                        <input type="submit" class="btn btn-info" value="Guardar">
-                    </div>
-                </form>
+                <div class="modal-header">
+                    <h4 class="modal-title">Editar producto</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body" id="form-editar">
+                </div>
+                <div class="col-md-4 m-auto">
+                    <button onclick="OnEditProd();" class="btn btn-primary form-control">Guardar</button>
+                </div>
+                <br></br>
             </div>
+            <!-- </form> -->
         </div>
     </div>
     <!-- Delete Modal HTML -->
@@ -152,13 +178,5 @@
         </div>
     </div>
 </form>
-<!-- 
-{% if value %}
-    <p id="idUserLogueado" style="visibility: hidden;">{{ value }}</p>
-{% endif %} -->
-
-<!-- <script>
-    getUsuarios();
-</script> -->
 
 {% endblock %}
