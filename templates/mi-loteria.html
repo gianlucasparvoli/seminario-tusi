@@ -32,6 +32,13 @@
                 document.getElementById("TipoCuenta").value = obj.tipoCuenta;
                 document.getElementById("Saldo").innerHTML = "$ " + obj.saldoActual;
                 document.getElementById("AliasCBU").value = obj.aliasCbu;
+                ///////////////////////////////////////////////////////////////////////
+                document.getElementById("CBUNuevo").value = x;
+                document.getElementById("NombreLoteriaNuevo").value = obj.nombre;
+                document.getElementById("BancoNuevo").value = obj.banco;
+                document.getElementById("TipoCuentaNuevo").value = obj.tipoCuenta;
+                document.getElementById("SaldoNuevo").value = obj.saldoActual;
+                document.getElementById("AliasCBUNuevo").value = obj.aliasCbu;
             });
         });
 
@@ -39,18 +46,23 @@
 
     function save_movement(sign) {
         let valor = null;
+        let comentario = "";
         if (sign === "-") {
-            if (document.getElementById("ValorDebt").value)
+            if (document.getElementById("ValorDebt").value) {
                 valor = parseInt("-" + document.getElementById("ValorDebt").value);
+                comentario = document.getElementById("ComentarioDebt").value;
+            }
         } else {
-            if (document.getElementById("ValorCred").value)
+            if (document.getElementById("ValorCred").value) {
                 valor = parseInt(document.getElementById("ValorCred").value);
+                comentario = document.getElementById("ComentarioCred").value;
+            }
         }
 
         const jsonToSend = {
             valor,
             fecha: new Date(),
-            comentario: "prueba"
+            comentario: comentario
         }
 
         if (valor) {
@@ -66,12 +78,38 @@
                 },
             });
         } else {
-            alert("Complete los campos")
+            alert("Coloque un valor correcto")
         }
 
     }
 
-    getMiLoteria();
+    function getMovements() {
+        url = "/lottery/movement";
+        $.getJSON(url).done(function (mov) {
+            $("#tabla_movements").empty();
+            mov.forEach(function (obj) {
+                var fechaAux = new Date(obj.valor);
+                var hours = fechaAux.getHours();
+                var minutes = fechaAux.getMinutes() < 10 ? '0' + fechaAux.getMinutes() : fechaAux.getMinutes();
+                $('#tabla_movements').append(
+                    '<tr>' +
+                    '<td>' + obj.id + '</td>' +
+                    '<td>' + fechaAux.getDate() + "/" + (fechaAux.getMonth() + 1) + "/" + fechaAux.getFullYear() + " " + hours + ":" + minutes + '</td>' +
+                    '<td>$ ' + obj.fecha + '</td>' +
+                    '<td>' + obj.comentario + '</td>' +
+                    '</tr>'
+                );
+
+            });
+        });
+    }
+
+
+
+    window.onload = function () {
+        getMiLoteria();
+        getMovements();
+    };
 
 </script>
 
@@ -95,26 +133,26 @@
 <br></br>
 <div class="form-row">
     <br></br>
-    <div class="form-group col-md-4">
-        <label>Nombre Loteria</label>
+    <div class="form-group col-md-4 text-center">
+        <label class="text-center">Nombre Loteria</label>
         <input type="text" class="form-control text-center" id="NombreLoteria" name="NombreLoteria"
             placeholder="Nombre Loteria" readonly>
     </div>
-    <div class="form-group col-md-4">
-        <label>Banco</label>
+    <div class="form-group col-md-4 text-center">
+        <label class="text-center">Banco</label>
         <input type="text" class="form-control text-center" id="Banco" name="Banco" placeholder="Banco" readonly>
     </div>
-    <div class="form-group col-md-4">
-        <label>Tipo Cuenta</label>
+    <div class="form-group col-md-4 text-center">
+        <label class="text-center">Tipo Cuenta</label>
         <input type="text" class="form-control text-center" id="TipoCuenta" name="TipoCuenta"
             placeholder="Tipo de Cuenta" readonly>
     </div>
-    <div class="form-group col-md-6">
-        <label>CBU</label>
+    <div class="form-group col-md-6 text-center">
+        <label class="text-center">CBU</label>
         <input type="text" class="form-control text-center" id="CBU" name="CBU" placeholder="CBU" readonly>
     </div>
-    <div class="form-group col-md-6">
-        <label>Alias CBU</label>
+    <div class="form-group col-md-6 text-center">
+        <label class="text-center">Alias CBU</label>
         <input type="text" class="form-control text-center" id="AliasCBU" name="AliasCBU" placeholder="Alias CBU"
             readonly>
     </div>
@@ -124,9 +162,8 @@
                 <h5 class="card-title">Saldo Actual</h5>
                 <h1 class="display-4 text-center" id="Saldo" style="color:darkgreen">$$$$$$$$</h1>
             </div>
-            <a class="text-muted" href="#"> 
-                Ver Movimientos
-            </a>
+            <a href="#MovementsModal" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip"
+                    title="Ver Movimientos">&#xe8ef;</i></a>
         </div>
     </div>
     <br></br>
@@ -138,6 +175,8 @@
         <button type="button" class="btn btn-primary form-control" data-toggle="modal" data-target="#CredModal">Credito
             (+)</button>
     </div>
+    <br></br>
+    <br></br>
     <br></br>
 </div>
 
@@ -195,7 +234,10 @@
             <div class="form-group col-md-12">
                 <input type="number" class="form-control" id="ValorDebt" name="ValorDebt" placeholder="Valor en Pesos">
             </div>
-
+            <div class="form-group col-md-12">
+                <input type="text" class="form-control" id="ComentarioDebt" name="ComentarioDebt"
+                    placeholder="Comentario">
+            </div>
             <br></br>
             <div class="form-group col-md-4 m-auto">
                 <button class="btn btn-primary form-control" onclick="save_movement('-');">Guardar</button>
@@ -216,12 +258,43 @@
                 <input type="number" class="form-control" id="ValorCred" name="ValorCred" placeholder="Valor en Pesos"
                     required>
             </div>
-
+            <div class="form-group col-md-12">
+                <input type="text" class="form-control" id="ComentarioCred" name="ComentarioDebt"
+                    placeholder="Comentario">
+            </div>
             <br></br>
             <div class="form-group col-md-4 m-auto">
                 <button class="btn btn-primary form-control" onclick="save_movement('+');">Guardar</button>
             </div>
             <br></br>
+        </div>
+    </div>
+</div>
+
+<!-- Movements Modal HTML -->
+<div id="MovementsModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <br></br>
+            <h4 class="text-center modal-title">Movimientos Mi Loteria</h4>
+            <br />
+            <div class="form-group col-md-12">
+                <table class="table table-striped table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th></th>
+                            <th>Fecha</th>
+                            <th>Valor</th>
+                            <th>Comentario</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla_movements">
+                    </tbody>
+                </table>
+            </div>
+            <br />
+            <button type="button" class="col-md-4 m-auto btn btn-primary" data-dismiss="modal">OK</button>
+            <br />
         </div>
     </div>
 </div>

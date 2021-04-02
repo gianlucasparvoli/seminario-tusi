@@ -37,6 +37,11 @@ class MyLotteryFindOneEndPoint(MethodView):
         return jsonify(s)
 
 class MyLotteryMovementEndPoint(MethodView):
+    def get(self):
+        all_movements = MiLoteriaMovimientos.query.all()
+        result = MisLoteriasMovimientos_schema.dump(all_movements)
+        return jsonify(result)
+
     def post(self):
         valor = request.form['valor']
         fecha = request.form['fecha']
