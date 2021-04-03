@@ -8,32 +8,44 @@
 <script>
 
     function getHistoryProducts(productoSelected) {
-        console.log(productoSelected)
         urlHistoryProd = "/products/history/all";
-
         $.getJSON(urlHistoryProd).done(function (res) {
             $("#tr_cargartabla").empty();
             res.forEach(function (prdoHist) {
                 const fechaAux = new Date(prdoHist.fechaCambio)
-                //if (prdoHist.productoid === productoSelected){
-                $('#tr_cargartabla').append(
-                    '<tr>' +
-                    '<td>' + prdoHist.id + '</td>' +
-                    '<td id="product-id' + prdoHist.productoid + "-" + prdoHist.id + '"></td>' +
-                    //'<td>' + prdoHist.productoid + '</td>' +
-                    '<td>$ ' + prdoHist.valor + '</td>' +
-                    '<td>' + fechaAux.getDate() + "/" + (fechaAux.getMonth() + 1) + "/" + fechaAux.getFullYear() + " " + fechaAux.getHours() + ":" + (fechaAux.getMinutes() + 1) + '</td>' +
-                    '</tr>'
-                );
-
-                url1 = "/product/" + prdoHist.productoid;
-                $.getJSON(url1).done(function (prod) {
-                    $("#product-id" + prdoHist.productoid + "-" + prdoHist.id).empty();
-                    prod.forEach(function (producto) {
-                        $('#product-id' + prdoHist.productoid + "-" + prdoHist.id).append(producto.nombre);
-                    })
-                });
-
+                if (productoSelected === undefined || productoSelected === "all") {
+                    $('#tr_cargartabla').append(
+                        '<tr>' +
+                        '<td>' + prdoHist.id + '</td>' +
+                        '<td id="product-id' + prdoHist.productoid + "-" + prdoHist.id + '"></td>' +
+                        '<td>$ ' + prdoHist.valor + '</td>' +
+                        '<td>' + fechaAux.getDate() + "/" + (fechaAux.getMonth() + 1) + "/" + fechaAux.getFullYear() + " " + fechaAux.getHours() + ":" + (fechaAux.getMinutes() + 1) + '</td>' +
+                        '</tr>'
+                    );
+                    url1 = "/product/" + prdoHist.productoid;
+                    $.getJSON(url1).done(function (prod) {
+                        $("#product-id" + prdoHist.productoid + "-" + prdoHist.id).empty();
+                        prod.forEach(function (producto) {
+                            $('#product-id' + prdoHist.productoid + "-" + prdoHist.id).append(producto.nombre);
+                        })
+                    });
+                }else if(prdoHist.productoid.toString() === productoSelected.toString()){
+                    $('#tr_cargartabla').append(
+                        '<tr>' +
+                        '<td>' + prdoHist.id + '</td>' +
+                        '<td id="product-id' + prdoHist.productoid + "-" + prdoHist.id + '"></td>' +
+                        '<td>$ ' + prdoHist.valor + '</td>' +
+                        '<td>' + fechaAux.getDate() + "/" + (fechaAux.getMonth() + 1) + "/" + fechaAux.getFullYear() + " " + fechaAux.getHours() + ":" + (fechaAux.getMinutes() + 1) + '</td>' +
+                        '</tr>'
+                    );
+                    url1 = "/product/" + prdoHist.productoid;
+                    $.getJSON(url1).done(function (prod) {
+                        $("#product-id" + prdoHist.productoid + "-" + prdoHist.id).empty();
+                        prod.forEach(function (producto) {
+                            $('#product-id' + prdoHist.productoid + "-" + prdoHist.id).append(producto.nombre);
+                        })
+                    });
+                }
             })
 
         })
@@ -62,9 +74,6 @@
         getHistoryProducts();
         showProducts();
     };
-
-
-
 
 </script>
 
