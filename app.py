@@ -22,6 +22,7 @@ from routes.ventas import *
 from routes.premio import *
 from routes.cuenta_corriente import *
 from routes.miloteria import *
+from routes.caja import *
 
 #from routes.routes import *
 

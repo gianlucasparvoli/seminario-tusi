@@ -1,0 +1,126 @@
+{% extends "navbar-logueado.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+<script>
+
+    function getDate() {
+        n = new Date();
+        y = n.getFullYear();
+        m = n.getMonth() + 1;
+        d = n.getDate();
+        return document.getElementById("date").innerHTML = "Fecha: " + d + "/" + m + "/" + y;
+    }
+
+    window.onload = function () {
+        getDate();
+    };
+
+</script>
+
+
+<div class="form-group" style="margin-top:100px;">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for m in messages %}
+    <div class="alert alert-success text-center">{{ m }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+
+<div class="form-row" style="text-align: center;">
+    <h2 class="col-md-12 m-auto">Gestionar Mi Caja
+        <!-- <a href="#editLotteryInfoModal" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip"
+                title="Editar">&#xE254;</i></a> -->
+    </h2>
+</div>
+<br></br>
+<div class="form-row">
+    <br></br>
+    <h5 class="col-md-12 m-auto text-center" id="date"></h5>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col" class="text-center  mx-auto">Totales Generales</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">Venta de mostrador</th>
+                <th class="text-center  mx-auto"><label>$$$$$$</label></th>
+            </tr>
+            <tr>
+                <th scope="row">Efectivo Inicial</th>
+                <th class="text-center  mx-auto"><label>$$$$$$</label></th>
+            </tr>
+            <tr>
+                <th scope="row">Venta Sistema</th>
+                <th class="text-center  mx-auto "><input type="number" class="form-control col-md-3 mx-auto "
+                        id="ventaSistema" name="ventaSistema" placeholder="Venta Sistema" required="required" min=0>
+                </th>
+            </tr>
+            <tr>
+                <th scope="row">Premios en linea</th>
+                <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto "
+                        id="premiosEnLinea" name="premiosEnLinea" placeholder="Premios en linea" required="required"
+                        min=0></th>
+            </tr>
+            <tr>
+                <th scope="row">Deposito</th>
+                <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto "
+                        id="Deposito" name="Deposito" placeholder="Deposito" required="required" min=0></th>
+            </tr>
+            <tr>
+                <th scope="row">Gastos</th>
+                <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto " id="Gastos"
+                        name="Gastos" placeholder="Gastos" required="required" min=0></th>
+            </tr>
+            <tr>
+                <th scope="row">Venta CTA CTE</th>
+                <th class="text-center  mx-auto"><label>$$$$$$</label></th>
+            </tr>
+            <tr>
+                <th scope="row">Cobro CTA CTE</th>
+                <th class="text-center  mx-auto"><label>$$$$$$</label></th>
+            </tr>
+            <tr>
+                <th scope="row">SUBE</th>
+                <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto " id="SUBE"
+                        name="SUBE" placeholder="SUBE" required="required" min=0></th>
+            </tr>
+            <tr>
+                <th scope="row">Saldo Final</th>
+                <th class="text-center  mx-auto"><label>$$$$$$</label></th>
+            </tr>
+            <tr>
+                <th scope="row">Efectivo Cierre Caja</th>
+                <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto "
+                        id="Efectivo" name="Efectivo" placeholder="Efectivo" required="required" min=0></th>
+            </tr>
+            <tr>
+                <th scope="row">Diferencia</th>
+                <th class="text-center  mx-auto"><label>$$$$$$</label></th>
+            </tr>
+            <tr>
+                <th scope="row">Comision</th>
+                <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto "
+                        id="Comision" name="Comision" placeholder="Comision" required="required" min=0></th>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="form-group col-md-4 m-auto">
+        <button class="btn btn-primary form-control">Registrar</button>
+    </div>
+    <br></br>
+    <br></br>
+</div>
+
+
+{% endblock %}
