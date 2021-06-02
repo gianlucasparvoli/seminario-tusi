@@ -379,4 +379,43 @@ class ProductoHistorialSchema(ma.Schema):
 ProductoHistorial_schema = ProductoHistorialSchema()  #Uno solo (POST,GET)
 ProductosHistorial_schema = ProductoHistorialSchema(many=True) #Varios (GET)
 
+class Caja(db.Model):
+    id=db.Column(db.Integer, primary_key=True,nullable=False)
+    ventaMostrador=db.Column(db.String(50),nullable=False)
+    efectivoInicial=db.Column(db.String(50),nullable=False)
+    ventaSistema=db.Column(db.String(50),nullable=False)
+    premiosEnLinea=db.Column(db.String(50),nullable=False)
+    deposito=db.Column(db.String(50),nullable=False)
+    gastos=db.Column(db.String(50),nullable=False)
+    ventaCtaCte=db.Column(db.String(50),nullable=False)
+    cobroCtaCte=db.Column(db.String(50),nullable=False)
+    sube=db.Column(db.String(50),nullable=False)
+    saldoFinal=db.Column(db.String(50),nullable=False)
+    efectivoCierreCaja=db.Column(db.String(50),nullable=False)
+    diferencia=db.Column(db.String(50),nullable=False)
+    comision=db.Column(db.String(50),nullable=False)
+
+
+    def __init__(self, ventaMostrador, efectivoInicial, ventaSistema, premiosEnLinea, deposito, gastos, ventaCtaCte, cobroCtaCte, sube, saldoFinal, efectivoCierreCaja, diferencia, comision):
+        self.ventaMostrador = ventaMostrador
+        self.efectivoInicial = efectivoInicial
+        self.ventaSistema = ventaSistema
+        self.premiosEnLinea = premiosEnLinea
+        self.deposito = deposito
+        self.gastos = gastos
+        self.ventaCtaCte = ventaCtaCte
+        self.cobroCtaCte = cobroCtaCte
+        self.sube = sube
+        self.saldoFinal = saldoFinal
+        self.efectivoCierreCaja = efectivoCierreCaja
+        self.diferencia = diferencia
+        self.comision = comision
+
+class CajaSchema(ma.Schema):
+    class Meta:
+        fields = ('ventaMostrador','efectivoInicial', 'ventaSistema', 'premiosEnLinea', 'deposito', 'gastos', 'ventaCtaCte', 'cobroCtaCte','sube', 'saldoFinal', 'efectivoCierreCaja', 'diferencia', 'comision')
+CajaSchema_schema = CajaSchema()  #Uno solo (POST,GET)
+CajasSchema_schema = CajaSchema(many=True) #Varios (GET)
+
+
 db.create_all()
