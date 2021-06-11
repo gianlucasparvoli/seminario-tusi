@@ -15,9 +15,86 @@
         return document.getElementById("date").innerHTML = "Fecha: " + d + "/" + m + "/" + y;
     }
 
+    function register() {
+        console.log("REGISTRADO")
+    }
+
+    let vtaMostrador = 0;
+    let vtaCC = 0;
+    let efectivoInicial = 0;
+
+    function getVtaMostrador() {
+        url = "/sell/all";
+        $.getJSON(url).done(function (vtas) {
+            let tot = 0;
+            let todaysDate = new Date();
+            vtas.forEach(function (obj) {
+                let inputDate = new Date(obj.fecha);
+                if (inputDate.setHours(0, 0, 0, 0) === todaysDate.setHours(0, 0, 0, 0)) {
+                    if (obj.productoid === 1 || obj.productoid === 7) {
+                        urlProd = "/product/" + obj.productoid;
+                        $.getJSON(urlProd).done(function (prods) {
+                            prods.forEach(function (x) {
+                                tot = tot + parseInt(x.precio);
+                            })
+                            document.getElementById("vtaMostrador").innerHTML = "$ " + tot;
+                            if (tot) vtaMostrador = tot;
+                            return vtaMostrador;
+                        })
+                    }
+                }
+            });
+
+        });
+    }
+
+    function getVtaCC() {
+        url = "/current-account/cc/all";
+        $.getJSON(url).done(function (vtacc) {
+            let tot = 0;
+            let todaysDate = new Date();
+            vtacc.forEach(function (obj) {
+                let inputDate = new Date(obj.fechamov);
+                if (inputDate.setHours(0, 0, 0, 0) === todaysDate.setHours(0, 0, 0, 0)) {
+                    tot = tot + parseInt(obj.monto);
+                }
+            });
+            document.getElementById("vtaCC").innerHTML = "$ " + tot;
+            if (tot) vtaCC = tot;
+            return vtaCC;
+        });
+    }
+
+    function getEfectivoInicial() {
+        url = "/caja/last";
+        $.getJSON(url).done(function (lastCaja) {
+            document.getElementById("efectivoInicial").innerHTML = "$ " + lastCaja.efectivoInicial;
+            if (lastCaja.efectivoInicial) efectivoInicial = lastCaja.efectivoInicial;
+            return efectivoInicial;
+        });
+    }
+
     window.onload = function () {
+
         getDate();
+
+        var p1 = new Promise((resolve, reject) => {
+            resolve(getVtaCC());
+        });
+        var p2 = new Promise((resolve, reject) => {
+            resolve(getVtaMostrador());
+        });
+        var p3 = new Promise((resolve, reject) => {
+            resolve(getEfectivoInicial());
+        });
+
+        Promise.all([p1, p2, p3]).then(function (value) {
+            console.log(value)
+            //console.log(vtaMostrador)
+        })
+
     };
+
 
 </script>
 
@@ -46,69 +123,69 @@
     <table class="table">
         <thead>
             <tr>
-                <th scope="col"></th>
-                <th scope="col" class="text-center  mx-auto">Totales Generales</th>
+                <!-- <th scope="col" class="text-center  mx-auto"></th>
+                <th scope="col" class="text-center  mx-auto">Totales Generales</th> -->
             </tr>
         </thead>
         <tbody>
             <tr>
-                <th scope="row">Venta de mostrador</th>
-                <th class="text-center  mx-auto"><label>$$$$$$</label></th>
+                <th scope="row" class="text-center  mx-auto">Venta de mostrador</th>
+                <th class="text-center  mx-auto"><label id="vtaMostrador">$$$$$$</label></th>
             </tr>
             <tr>
-                <th scope="row">Efectivo Inicial</th>
-                <th class="text-center  mx-auto"><label>$$$$$$</label></th>
+                <th scope="row" class="text-center  mx-auto">Efectivo Inicial</th>
+                <th class="text-center  mx-auto"><label id="efectivoInicial">$$$$$$</label></th>
             </tr>
             <tr>
-                <th scope="row">Venta Sistema</th>
+                <th scope="row" class="text-center  mx-auto">Venta Sistema</th>
                 <th class="text-center  mx-auto "><input type="number" class="form-control col-md-3 mx-auto "
                         id="ventaSistema" name="ventaSistema" placeholder="Venta Sistema" required="required" min=0>
                 </th>
             </tr>
             <tr>
-                <th scope="row">Premios en linea</th>
+                <th scope="row" class="text-center  mx-auto">Premios en linea</th>
                 <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto "
                         id="premiosEnLinea" name="premiosEnLinea" placeholder="Premios en linea" required="required"
                         min=0></th>
             </tr>
             <tr>
-                <th scope="row">Deposito</th>
+                <th scope="row" class="text-center  mx-auto">Deposito</th>
                 <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto "
                         id="Deposito" name="Deposito" placeholder="Deposito" required="required" min=0></th>
             </tr>
             <tr>
-                <th scope="row">Gastos</th>
+                <th scope="row" class="text-center  mx-auto">Gastos</th>
                 <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto " id="Gastos"
                         name="Gastos" placeholder="Gastos" required="required" min=0></th>
             </tr>
             <tr>
-                <th scope="row">Venta CTA CTE</th>
+                <th scope="row" class="text-center  mx-auto">Venta CTA CTE</th>
+                <th class="text-center  mx-auto"><label id="vtaCC">$$$$$$</label></th>
+            </tr>
+            <tr>
+                <th scope="row" class="text-center  mx-auto">Cobro CTA CTE</th>
                 <th class="text-center  mx-auto"><label>$$$$$$</label></th>
             </tr>
             <tr>
-                <th scope="row">Cobro CTA CTE</th>
-                <th class="text-center  mx-auto"><label>$$$$$$</label></th>
-            </tr>
-            <tr>
-                <th scope="row">SUBE</th>
+                <th scope="row" class="text-center  mx-auto">SUBE</th>
                 <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto " id="SUBE"
                         name="SUBE" placeholder="SUBE" required="required" min=0></th>
             </tr>
             <tr>
-                <th scope="row">Saldo Final</th>
+                <th scope="row" class="text-center  mx-auto">Saldo Final</th>
                 <th class="text-center  mx-auto"><label>$$$$$$</label></th>
             </tr>
             <tr>
-                <th scope="row">Efectivo Cierre Caja</th>
+                <th scope="row" class="text-center  mx-auto">Efectivo Cierre Caja</th>
                 <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto "
                         id="Efectivo" name="Efectivo" placeholder="Efectivo" required="required" min=0></th>
             </tr>
             <tr>
-                <th scope="row">Diferencia</th>
+                <th scope="row" class="text-center  mx-auto">Diferencia</th>
                 <th class="text-center  mx-auto"><label>$$$$$$</label></th>
             </tr>
             <tr>
-                <th scope="row">Comision</th>
+                <th scope="row" class="text-center  mx-auto">Comision</th>
                 <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto "
                         id="Comision" name="Comision" placeholder="Comision" required="required" min=0></th>
             </tr>
@@ -116,7 +193,7 @@
     </table>
 
     <div class="form-group col-md-4 m-auto">
-        <button class="btn btn-primary form-control">Registrar</button>
+        <button class="btn btn-primary form-control" onclick="register();">Registrar</button>
     </div>
     <br></br>
     <br></br>

@@ -11,3 +11,9 @@ import datetime
 class cajaEndPoint(MethodView):
     def get(self):
         return render_template("caja.html")
+
+class cajaLastEndPoint(MethodView):
+    def get(self):
+        ultimaCaja = Caja.query.all()
+        s = CajasSchema_schema.dump(ultimaCaja)
+        return jsonify(s[len(s) - 1])
