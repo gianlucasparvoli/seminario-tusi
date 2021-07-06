@@ -19,9 +19,18 @@
         console.log("REGISTRADO")
     }
 
-    let vtaMostrador = 0;
-    let vtaCC = 0;
-    let efectivoInicial = 0;
+    var vtaMostrador = 0;
+    var vtaCC = 0;
+    var efectivoInicial = 0;
+    var vtasistema = 0;
+    var premiosEnLinea = 0;
+    var deposito = 0;
+    var gastos = 0;
+    var sube = 0;
+    var efectivoCierreCaja = 0;
+    var comision = 0;
+    var saldoFinal = 0;
+    var cobrosCC = 0;
 
     function getVtaMostrador() {
         url = "/sell/all";
@@ -38,7 +47,7 @@
                                 tot = tot + parseInt(x.precio);
                             })
                             document.getElementById("vtaMostrador").innerHTML = "$ " + tot;
-                            if (tot) vtaMostrador = tot;
+                            if (tot) vtaMostrador = parseInt(tot);
                             return vtaMostrador;
                         })
                     }
@@ -60,7 +69,7 @@
                 }
             });
             document.getElementById("vtaCC").innerHTML = "$ " + tot;
-            if (tot) vtaCC = tot;
+            if (tot) vtaCC = parseInt(tot);
             return vtaCC;
         });
     }
@@ -69,7 +78,7 @@
         url = "/caja/last";
         $.getJSON(url).done(function (lastCaja) {
             document.getElementById("efectivoInicial").innerHTML = "$ " + lastCaja.efectivoInicial;
-            if (lastCaja.efectivoInicial) efectivoInicial = lastCaja.efectivoInicial;
+            if (lastCaja.efectivoInicial) efectivoInicial = parseInt(lastCaja.efectivoInicial);
             return efectivoInicial;
         });
     }
@@ -88,12 +97,40 @@
             resolve(getEfectivoInicial());
         });
 
-        Promise.all([p1, p2, p3]).then(function (value) {
-            console.log(value)
-            //console.log(vtaMostrador)
-        })
-
     };
+
+    function getVengaSistema(e){
+        vtasistema = parseInt(e.value);
+    }
+
+    function getPremiosEnLinea(e){
+        premiosEnLinea = parseInt(e.value);
+    }
+
+    function getDeposito(e){
+        deposito = parseInt(e.value);
+    }
+
+    function getGastos(e){
+        gastos = parseInt(e.value);
+    }
+
+    function getSube(e){
+        sube = parseInt(e.value);
+    }
+
+    function getEfectivoCierreCaja(e){
+        efectivoCierreCaja = parseInt(e.value);
+    }
+
+    function getComision(e){
+        comision = parseInt(e.value);
+    }
+
+    function getSaldoFinal(){
+        saldoFinal = vtasistema - premiosEnLinea - deposito - gastos - vtaCC + cobrosCC + efectivoInicial + sube;
+        document.getElementById("saldoFinal").innerHTML = "$ " + saldoFinal;
+    }
 
 
 </script>
@@ -139,24 +176,24 @@
             <tr>
                 <th scope="row" class="text-center  mx-auto">Venta Sistema</th>
                 <th class="text-center  mx-auto "><input type="number" class="form-control col-md-3 mx-auto "
-                        id="ventaSistema" name="ventaSistema" placeholder="Venta Sistema" required="required" min=0>
+                        id="ventaSistema" name="ventaSistema" placeholder="Venta Sistema" required="required" min=0 onchange="getVengaSistema(this)">
                 </th>
             </tr>
             <tr>
                 <th scope="row" class="text-center  mx-auto">Premios en linea</th>
                 <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto "
-                        id="premiosEnLinea" name="premiosEnLinea" placeholder="Premios en linea" required="required"
+                        id="premiosEnLinea" name="premiosEnLinea" placeholder="Premios en linea" required="required" onchange="getPremiosEnLinea(this)"
                         min=0></th>
             </tr>
             <tr>
                 <th scope="row" class="text-center  mx-auto">Deposito</th>
                 <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto "
-                        id="Deposito" name="Deposito" placeholder="Deposito" required="required" min=0></th>
+                        id="Deposito" name="Deposito" placeholder="Deposito" required="required" min=0 onchange="getDeposito(this)"></th>
             </tr>
             <tr>
                 <th scope="row" class="text-center  mx-auto">Gastos</th>
                 <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto " id="Gastos"
-                        name="Gastos" placeholder="Gastos" required="required" min=0></th>
+                        name="Gastos" placeholder="Gastos" required="required" min=0 onchange="getGastos(this)"></th>
             </tr>
             <tr>
                 <th scope="row" class="text-center  mx-auto">Venta CTA CTE</th>
@@ -169,16 +206,16 @@
             <tr>
                 <th scope="row" class="text-center  mx-auto">SUBE</th>
                 <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto " id="SUBE"
-                        name="SUBE" placeholder="SUBE" required="required" min=0></th>
+                        name="SUBE" placeholder="SUBE" required="required" min=0 onchange="getSube(this)"></th>
             </tr>
             <tr>
-                <th scope="row" class="text-center  mx-auto">Saldo Final</th>
-                <th class="text-center  mx-auto"><label>$$$$$$</label></th>
+                <th scope="row" class="text-center  mx-auto">Saldo Final  <button id="btn_cierrecaja" onclick="getSaldoFinal()">VER</button></th>
+                <th class="text-center  mx-auto"><label id="saldoFinal">Click en boton "VER"</label></th>
             </tr>
             <tr>
                 <th scope="row" class="text-center  mx-auto">Efectivo Cierre Caja</th>
                 <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto "
-                        id="Efectivo" name="Efectivo" placeholder="Efectivo" required="required" min=0></th>
+                        id="Efectivo" name="Efectivo" placeholder="Efectivo" required="required" min=0 onchange="getEfectivoCierreCaja(this)"></th>
             </tr>
             <tr>
                 <th scope="row" class="text-center  mx-auto">Diferencia</th>
@@ -187,7 +224,7 @@
             <tr>
                 <th scope="row" class="text-center  mx-auto">Comision</th>
                 <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto "
-                        id="Comision" name="Comision" placeholder="Comision" required="required" min=0></th>
+                        id="Comision" name="Comision" placeholder="Comision" required="required" min=0 onchange="getComision(this)"></th>
             </tr>
         </tbody>
     </table>
