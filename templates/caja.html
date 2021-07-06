@@ -31,6 +31,7 @@
     var comision = 0;
     var saldoFinal = 0;
     var cobrosCC = 0;
+    var diferencia = 0;
 
     function getVtaMostrador() {
         url = "/sell/all";
@@ -132,6 +133,11 @@
         document.getElementById("saldoFinal").innerHTML = "$ " + saldoFinal;
     }
 
+    function getDiferencia(){
+        diferencia = saldoFinal - efectivoCierreCaja;
+        document.getElementById("diferencia").innerHTML = "$ " + diferencia;
+    }
+
 
 </script>
 
@@ -209,7 +215,7 @@
                         name="SUBE" placeholder="SUBE" required="required" min=0 onchange="getSube(this)"></th>
             </tr>
             <tr>
-                <th scope="row" class="text-center  mx-auto">Saldo Final  <button id="btn_cierrecaja" onclick="getSaldoFinal()">VER</button></th>
+                <th scope="row" class="text-center  mx-auto">Saldo Final  <button class="btn btn-primary" id="btn_cierrecaja" onclick="getSaldoFinal()">VER</button></th>
                 <th class="text-center  mx-auto"><label id="saldoFinal">Click en boton "VER"</label></th>
             </tr>
             <tr>
@@ -218,8 +224,8 @@
                         id="Efectivo" name="Efectivo" placeholder="Efectivo" required="required" min=0 onchange="getEfectivoCierreCaja(this)"></th>
             </tr>
             <tr>
-                <th scope="row" class="text-center  mx-auto">Diferencia</th>
-                <th class="text-center  mx-auto"><label>$$$$$$</label></th>
+                <th scope="row" class="text-center  mx-auto">Diferencia  <button class="btn btn-primary" id="btn_diferencia" onclick="getDiferencia()">VER</button></th>
+                <th class="text-center  mx-auto"><label id="diferencia">Click en boton "VER"</label></th>
             </tr>
             <tr>
                 <th scope="row" class="text-center  mx-auto">Comision</th>
