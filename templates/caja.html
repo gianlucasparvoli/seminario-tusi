@@ -16,7 +16,34 @@
     }
 
     function register() {
-        console.log("REGISTRADO")
+        
+        const jsonToSend = {
+            ventaMostrador : vtaMostrador,
+            efectivoInicial,
+            ventaSistema : vtasistema,
+            premiosEnLinea ,
+            deposito,
+            gastos,
+            ventaCtaCte :vtaCC,
+            cobroCtaCte : cobrosCC,
+            sube,
+            saldoFinal,
+            efectivoCierreCaja,
+            diferencia,
+            comision
+        }
+
+        $.ajax({
+            url: "/caja/add",
+            type: "POST",
+            data: jsonToSend,
+            success: function (response) {
+                console.log(response)
+            },
+            error: function (error) {
+                console.log(error);
+            },
+        });
     }
 
     var vtaMostrador = 0;
@@ -100,40 +127,40 @@
 
     };
 
-    function getVengaSistema(e){
+    function getVengaSistema(e) {
         vtasistema = parseInt(e.value);
     }
 
-    function getPremiosEnLinea(e){
+    function getPremiosEnLinea(e) {
         premiosEnLinea = parseInt(e.value);
     }
 
-    function getDeposito(e){
+    function getDeposito(e) {
         deposito = parseInt(e.value);
     }
 
-    function getGastos(e){
+    function getGastos(e) {
         gastos = parseInt(e.value);
     }
 
-    function getSube(e){
+    function getSube(e) {
         sube = parseInt(e.value);
     }
 
-    function getEfectivoCierreCaja(e){
+    function getEfectivoCierreCaja(e) {
         efectivoCierreCaja = parseInt(e.value);
     }
 
-    function getComision(e){
+    function getComision(e) {
         comision = parseInt(e.value);
     }
 
-    function getSaldoFinal(){
+    function getSaldoFinal() {
         saldoFinal = vtasistema - premiosEnLinea - deposito - gastos - vtaCC + cobrosCC + efectivoInicial + sube;
         document.getElementById("saldoFinal").innerHTML = "$ " + saldoFinal;
     }
 
-    function getDiferencia(){
+    function getDiferencia() {
         diferencia = saldoFinal - efectivoCierreCaja;
         document.getElementById("diferencia").innerHTML = "$ " + diferencia;
     }
@@ -182,19 +209,21 @@
             <tr>
                 <th scope="row" class="text-center  mx-auto">Venta Sistema</th>
                 <th class="text-center  mx-auto "><input type="number" class="form-control col-md-3 mx-auto "
-                        id="ventaSistema" name="ventaSistema" placeholder="Venta Sistema" required="required" min=0 onchange="getVengaSistema(this)">
+                        id="ventaSistema" name="ventaSistema" placeholder="Venta Sistema" required="required" min=0
+                        onchange="getVengaSistema(this)">
                 </th>
             </tr>
             <tr>
                 <th scope="row" class="text-center  mx-auto">Premios en linea</th>
                 <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto "
-                        id="premiosEnLinea" name="premiosEnLinea" placeholder="Premios en linea" required="required" onchange="getPremiosEnLinea(this)"
-                        min=0></th>
+                        id="premiosEnLinea" name="premiosEnLinea" placeholder="Premios en linea" required="required"
+                        onchange="getPremiosEnLinea(this)" min=0></th>
             </tr>
             <tr>
                 <th scope="row" class="text-center  mx-auto">Deposito</th>
                 <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto "
-                        id="Deposito" name="Deposito" placeholder="Deposito" required="required" min=0 onchange="getDeposito(this)"></th>
+                        id="Deposito" name="Deposito" placeholder="Deposito" required="required" min=0
+                        onchange="getDeposito(this)"></th>
             </tr>
             <tr>
                 <th scope="row" class="text-center  mx-auto">Gastos</th>
@@ -215,22 +244,26 @@
                         name="SUBE" placeholder="SUBE" required="required" min=0 onchange="getSube(this)"></th>
             </tr>
             <tr>
-                <th scope="row" class="text-center  mx-auto">Saldo Final  <button class="btn btn-primary" id="btn_cierrecaja" onclick="getSaldoFinal()">VER</button></th>
+                <th scope="row" class="text-center  mx-auto">Saldo Final <button class="btn btn-primary"
+                        id="btn_cierrecaja" onclick="getSaldoFinal()">VER</button></th>
                 <th class="text-center  mx-auto"><label id="saldoFinal">Click en boton "VER"</label></th>
             </tr>
             <tr>
                 <th scope="row" class="text-center  mx-auto">Efectivo Cierre Caja</th>
                 <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto "
-                        id="Efectivo" name="Efectivo" placeholder="Efectivo" required="required" min=0 onchange="getEfectivoCierreCaja(this)"></th>
+                        id="Efectivo" name="Efectivo" placeholder="Efectivo" required="required" min=0
+                        onchange="getEfectivoCierreCaja(this)"></th>
             </tr>
             <tr>
-                <th scope="row" class="text-center  mx-auto">Diferencia  <button class="btn btn-primary" id="btn_diferencia" onclick="getDiferencia()">VER</button></th>
+                <th scope="row" class="text-center  mx-auto">Diferencia <button class="btn btn-primary"
+                        id="btn_diferencia" onclick="getDiferencia()">VER</button></th>
                 <th class="text-center  mx-auto"><label id="diferencia">Click en boton "VER"</label></th>
             </tr>
             <tr>
                 <th scope="row" class="text-center  mx-auto">Comision</th>
                 <th class="text-center  mx-auto"><input type="number" class="form-control col-md-3 mx-auto "
-                        id="Comision" name="Comision" placeholder="Comision" required="required" min=0 onchange="getComision(this)"></th>
+                        id="Comision" name="Comision" placeholder="Comision" required="required" min=0
+                        onchange="getComision(this)"></th>
             </tr>
         </tbody>
     </table>
